@@ -9,26 +9,103 @@ st.set_page_config(page_title="Parking Space Estimator", layout="wide")
 st.title("🅿️ Parking Space Estimator")
 st.markdown("Draw a polygon on the map to estimate how many parking spaces could fit in the area.")
 
+# Set up logging
+import logging
+logging.basicConfig(
+    filename='parking_estimator_errors.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# Test endpoint availability with logging
+def test_endpoint_availability(name, url):
+    try:
+        import requests
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        
+        logging.info(f"Testing {name} endpoint: {url}")
+        
+        response = requests.get(url, verify=False, timeout=5)
+        
+        if response.status_code == 200:
+            logging.info(f"{name} endpoint SUCCESS - Status: {response.status_code}")
+            return True
+        else:
+            logging.error(f"{name} endpoint FAILED - Status: {response.status_code}, Response: {response.text[:200]}")
+            return False
+            
+    except requests.exceptions.Timeout as e:
+        logging.error(f"{name} endpoint TIMEOUT - {str(e)}")
+        return False
+    except requests.exceptions.ConnectionError as e:
+        logging.error(f"{name} endpoint CONNECTION ERROR - {str(e)}")
+        return False
+    except Exception as e:
+        logging.error(f"{name} endpoint UNKNOWN ERROR - {type(e).__name__}: {str(e)}")
+        return False
+
+# Test NAIP endpoint availability
+def test_naip_availability():
+    test_url = "https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json"
+    return test_endpoint_availability("NAIP", test_url)
+
+# Test all basemap endpoints on startup
+def test_all_basemaps():
+    basemap_urls = {
+        "Esri World Imagery": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json",
+        "Google Satellite": "https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0",
+        "Esri Clarity": "https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json",
+    }
+    
+    results = {}
+    for name, url in basemap_urls.items():
+        results[name] = test_endpoint_availability(name, url)
+    
+    return results
+
+# Check NAIP availability on startup
+if 'naip_available' not in st.session_state:
+    st.session_state.naip_available = test_naip_availability()
+
 # Sidebar for parameters
 st.sidebar.header("Parking Configuration")
 
-# Basemap selection
+# Basemap selection - include NAIP if available
+basemap_options = [
+    "Esri World Imagery",
+    "Google Satellite",
+    "Esri Clarity (High-Res)",
+]
+
+if st.session_state.naip_available:
+    basemap_options.insert(3, "USDA NAIP (via Esri)")
+else:
+    st.sidebar.warning("⚠️ USDA NAIP imagery currently unavailable (possibly due to gov shutdown)")
+
 basemap = st.sidebar.selectbox(
     "Basemap Layer",
-    [
-        "Esri World Imagery",
-        "Google Satellite",
-        "Esri Clarity (High-Res)",
-        "USDA NAIP (via Esri)",
-        "OpenStreetMap"
-    ]
+    basemap_options
 )
+
+# Add refresh button for NAIP status
+if not st.session_state.naip_available:
+    if st.sidebar.button("🔄 Test NAIP Connection"):
+        with st.spinner("Testing NAIP endpoint..."):
+            st.session_state.naip_available = test_naip_availability()
+            if st.session_state.naip_available:
+                st.sidebar.success("✓ NAIP is now available!")
+                st.rerun()
+            else:
+                st.sidebar.error("✗ NAIP still unavailable")
+
+basemap_options.append("OpenStreetMap")
 
 # Basemap information
 basemap_info = {
     "Esri World Imagery": "**Update Frequency:** Quarterly to annually\n\n**Resolution:** 30cm-1m in urban areas, varies globally\n\n**Coverage:** Global\n\n**Notes:** Composite from multiple sources including DigitalGlobe, GeoEye, and others. Urban areas typically more recent.",
     "Google Satellite": "**Update Frequency:** Monthly to annually\n\n**Resolution:** 15cm-1m depending on location\n\n**Coverage:** Global\n\n**Notes:** More frequent updates in populated areas. Check Google Earth for specific imagery dates.",
-    "Esri Clarity (High-Res)": "**Update Frequency:** Annually\n\n**Resolution:** 30-50cm\n\n**Coverage:** Global population centers\n\n**Notes:** Vivid natural color imagery with excellent clarity for urban planning.",
+    "Esri Clarity (High-Res)": "**Update Frequency:** Annually\n\n**Resolution:** 30-50cm\n\n**Coverage:** Global population centers\n\n**Coverage:** Global\n\n**Notes:** Vivid natural color imagery with excellent clarity for urban planning.",
     "USDA NAIP (via Esri)": "**Update Frequency:** Every 2-3 years per state\n\n**Resolution:** 60cm-1m\n\n**Coverage:** Continental US only\n\n**Notes:** High-quality USDA aerial imagery served through Esri's reliable infrastructure.",
     "OpenStreetMap": "**Update Frequency:** Real-time (map data)\n\n**Resolution:** Vector data\n\n**Coverage:** Global\n\n**Notes:** Community-maintained street map. Not satellite imagery but useful for reference."
 }
@@ -88,10 +165,20 @@ if search_button and address:
     try:
         import requests
         import urllib.parse
+        import logging
+        
+        # Set up logging
+        logging.basicConfig(
+            filename='parking_estimator_errors.log',
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
         
         # Use requests directly with verify=False for corporate networks
         encoded_address = urllib.parse.quote(address)
         url = f"https://nominatim.openstreetmap.org/search?q={encoded_address}&format=json&limit=1"
+        
+        logging.info(f"Geocoding request for address: {address}")
         
         response = requests.get(
             url, 
@@ -111,12 +198,22 @@ if search_button and address:
                 st.session_state.map_center = [float(location['lat']), float(location['lon'])]
                 st.session_state.map_zoom = 18
                 st.success(f"✓ Found: {location.get('display_name', address)}")
+                logging.info(f"Geocoding SUCCESS - Found: {location.get('display_name', address)}")
             else:
                 st.error("Address not found. Please try a different search term.")
+                logging.warning(f"Geocoding returned no results for: {address}")
         else:
             st.error(f"Search failed with status code: {response.status_code}")
+            logging.error(f"Geocoding FAILED - Status: {response.status_code}, Response: {response.text[:200]}")
+    except requests.exceptions.Timeout as e:
+        st.error("Search timed out. Please try again.")
+        logging.error(f"Geocoding TIMEOUT - {str(e)}")
+    except requests.exceptions.ConnectionError as e:
+        st.error("Connection error. Please check your network.")
+        logging.error(f"Geocoding CONNECTION ERROR - {str(e)}")
     except Exception as e:
         st.error(f"Search error: {str(e)}")
+        logging.error(f"Geocoding UNKNOWN ERROR - {type(e).__name__}: {str(e)}")
 
 st.markdown("---")
 
@@ -136,7 +233,6 @@ with col1:
         tiles = 'https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
         attr = 'Esri Clarity'
     elif basemap == "USDA NAIP (via Esri)":
-        # Use Esri's NAIP Plus service which is more reliable
         tiles = 'https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer/tile/{z}/{y}/{x}'
         attr = 'USDA NAIP'
     else:  # OpenStreetMap

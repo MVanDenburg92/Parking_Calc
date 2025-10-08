@@ -1,0 +1,2 @@
+2025-10-08 13:01:31,022 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-08 13:01:31,544 - INFO - NAIP endpoint SUCCESS - Status: 200
