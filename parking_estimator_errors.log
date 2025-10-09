@@ -1394,3 +1394,617 @@
 2025-10-08 16:47:41,814 - INFO - Basemap Esri World Imagery loaded successfully at [41.8777496, -87.623812]
 2025-10-08 16:47:42,680 - INFO - Loading basemap: Esri World Imagery
 2025-10-08 16:47:42,687 - INFO - Basemap Esri World Imagery loaded successfully at [41.8777496, -87.623812]
+2025-10-09 11:11:02,811 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:11:04,412 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:11:04,414 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:11:04,620 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:11:04,621 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:11:04,819 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:11:04,820 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:11:05,100 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:11:05,114 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:11:05,117 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:11:07,600 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:11:07,607 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:11:08,043 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:11:08,051 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:11:10,320 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:11:10,759 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:11:10,761 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:11:10,908 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:11:10,909 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:11:11,020 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:11:11,021 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:11:11,256 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:11:11,264 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:11:11,266 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:31,076 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:31,081 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:31,347 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:31,349 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:32,374 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:32,379 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:37,393 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:37,398 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:38,676 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:38,681 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:39,630 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:39,636 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:40,285 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:40,293 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:43,175 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:43,181 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:43,849 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:43,855 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:44,505 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:44,511 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:45,182 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:45,186 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:46,041 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:46,045 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:46,778 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:46,784 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:47,447 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:47,454 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:51,142 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:51,147 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:12:54,125 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:54,130 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:12:54,242 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:54,252 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:12:55,662 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:55,669 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:12:57,908 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:57,916 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:12:59,188 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:12:59,194 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:13:15,640 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:13:15,643 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:13:18,365 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:13:18,371 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:13:19,896 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:13:19,905 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:13:21,173 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:13:21,179 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:16,960 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:16,966 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:26,276 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:26,282 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:27,495 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:27,501 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:28,702 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:28,708 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:29,899 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:29,904 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:33,827 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:33,833 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:37,163 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:37,169 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:38,442 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:38,448 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:39,903 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:39,908 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:14:41,136 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:14:41,142 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:15:16,829 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:15:16,834 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:15:18,964 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:15:18,969 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:15:20,172 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:15:20,178 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:15:30,145 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:15:30,152 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:15:31,331 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:15:31,335 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:16:12,744 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:16:12,751 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:16:16,162 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:16:16,169 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:16:49,763 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:16:49,766 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:16:54,005 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:16:54,011 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:16:56,488 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:16:56,494 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:16:59,384 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:16:59,390 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:17:00,725 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:17:00,732 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:17:38,521 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:17:38,524 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:17:39,751 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:17:39,755 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:17:41,360 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:17:41,366 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:17:42,603 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:17:42,609 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:17:43,916 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:17:43,921 - INFO - Basemap Esri World Imagery loaded successfully at [41.877603199999996, -87.62374220000001]
+2025-10-09 11:21:02,740 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:21:03,182 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:21:03,183 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:21:03,370 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:21:03,371 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:21:03,517 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:21:03,517 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:21:03,815 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:21:03,824 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:03,828 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:05,235 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:05,240 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:05,484 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:05,492 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:13,160 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:13,166 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:13,396 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:13,401 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:15,052 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:15,054 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:15,885 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:15,890 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:16,569 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:16,575 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:16,992 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:16,997 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:17,755 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:17,761 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:18,539 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:18,544 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:21,661 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:21,666 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:21:26,241 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:26,247 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:26,491 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:26,496 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:27,013 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:27,019 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:28,618 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:28,624 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:30,885 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:30,888 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:32,015 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:32,017 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:32,102 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:32,108 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:32,583 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:32,591 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:33,148 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:33,155 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:21:33,636 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:21:33,641 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:22:16,912 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:22:16,918 - INFO - Basemap Esri World Imagery loaded successfully at [41.878011400000005, -87.623923]
+2025-10-09 11:26:28,022 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:26:28,524 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:26:28,535 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:26:28,797 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:26:28,798 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:26:29,064 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:26:29,066 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:26:29,381 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:26:29,397 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:29,403 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:31,103 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:31,110 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:31,364 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:31,370 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:42,978 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:42,984 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:43,414 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:43,422 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:44,169 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:44,177 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:44,942 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:44,947 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:47,671 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:47,677 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:26:51,100 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:51,106 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780522, -87.6239328]
+2025-10-09 11:26:51,355 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:51,360 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780522, -87.6239328]
+2025-10-09 11:26:51,893 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:51,899 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780522, -87.6239328]
+2025-10-09 11:26:56,147 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:56,152 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780522, -87.6239328]
+2025-10-09 11:26:58,613 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:58,619 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778992, -87.62393420000001]
+2025-10-09 11:26:58,840 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:58,847 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778992, -87.62393420000001]
+2025-10-09 11:26:59,348 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:26:59,354 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778992, -87.62393420000001]
+2025-10-09 11:27:03,536 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:27:03,539 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778992, -87.62393420000001]
+2025-10-09 11:27:04,019 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:27:04,024 - INFO - Basemap Esri World Imagery loaded successfully at [41.877948200000006, -87.6239116]
+2025-10-09 11:27:04,102 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:27:04,107 - INFO - Basemap Esri World Imagery loaded successfully at [41.877948200000006, -87.6239116]
+2025-10-09 11:27:04,665 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:27:04,671 - INFO - Basemap Esri World Imagery loaded successfully at [41.877948200000006, -87.6239116]
+2025-10-09 11:27:05,225 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:27:05,230 - INFO - Basemap Esri World Imagery loaded successfully at [41.877948200000006, -87.6239116]
+2025-10-09 11:27:05,762 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:27:05,767 - INFO - Basemap Esri World Imagery loaded successfully at [41.877948200000006, -87.6239116]
+2025-10-09 11:28:56,358 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:28:56,792 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:28:56,794 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:28:57,023 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:28:57,024 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:28:57,201 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:28:57,201 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:28:57,498 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:28:57,507 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:28:57,511 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:28:58,930 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:28:58,936 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:28:59,186 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:28:59,192 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:29:03,688 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:03,693 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:29:03,944 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:03,950 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:29:06,649 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:06,651 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:29:10,438 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:10,444 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:29:12,734 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:12,737 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:29:15,050 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:15,055 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:15,150 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:15,156 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:15,701 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:15,707 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:16,207 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:16,213 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:16,713 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:16,719 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:26,170 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:26,176 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:32,634 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:32,638 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:34,633 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:34,639 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:49,533 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:49,539 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:56,114 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:56,120 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:56,683 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:56,689 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:29:59,570 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:29:59,576 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:30:01,915 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:30:01,920 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:30:04,705 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:30:04,712 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:31:06,575 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:31:06,581 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:31:32,868 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:31:32,873 - INFO - Basemap Esri World Imagery loaded successfully at [41.877954599999995, -87.6239448]
+2025-10-09 11:32:57,116 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:32:57,632 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:32:57,753 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:32:58,034 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:32:58,036 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:32:58,334 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:32:58,339 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:32:58,706 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:32:58,722 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:32:58,728 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:01,380 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:01,386 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:01,738 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:01,748 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:12,302 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:12,310 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:12,799 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:12,810 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:13,954 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:13,964 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:15,571 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:15,582 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:19,166 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:19,178 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:33:21,986 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:21,995 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:22,154 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:22,163 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:22,992 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:23,002 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:23,520 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:23,531 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:48,202 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:48,211 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:48,807 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:48,817 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:49,416 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:49,426 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:50,971 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:50,982 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:51,929 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:51,938 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:33:52,467 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:33:52,474 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:34:03,324 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:03,329 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:34:14,710 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:14,719 - INFO - Basemap Esri World Imagery loaded successfully at [41.8780074, -87.62393080000001]
+2025-10-09 11:34:22,051 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:34:22,489 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:34:22,493 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:34:22,740 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:34:22,741 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:34:22,929 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:34:22,930 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:34:23,256 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:34:23,275 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:23,284 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:26,134 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:26,142 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:26,440 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:26,447 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:28,058 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:28,065 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:28,727 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:28,737 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:29,377 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:29,388 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:30,307 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:30,317 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:33,966 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:33,975 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 11:34:37,880 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:37,890 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:38,044 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:38,056 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:38,815 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:38,824 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:39,440 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:39,449 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:46,469 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:46,479 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:47,674 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:47,684 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:48,282 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:48,293 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:49,162 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:49,173 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:49,819 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:49,829 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:52,028 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:52,038 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:34:54,991 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:34:55,001 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:00,130 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:00,141 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:01,052 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:01,062 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:01,742 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:01,752 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:03,602 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:03,608 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:04,235 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:04,245 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:06,352 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:06,363 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:07,254 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:07,263 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:07,971 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:07,986 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:31,986 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:31,998 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:35:36,064 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:35:36,075 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:36:06,591 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:36:06,603 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:36:08,299 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:36:08,312 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:36:09,050 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:36:09,060 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:36:12,942 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:36:12,952 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:36:23,868 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:36:23,879 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:36:24,870 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:36:24,879 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:36:25,477 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:36:25,486 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:37:55,836 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:37:55,845 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:38:10,209 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:38:10,219 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:38:11,681 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:38:11,690 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:38:23,043 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:38:23,053 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:38:24,064 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 11:38:24,074 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:40:54,534 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:40:54,546 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:40:55,583 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:40:55,590 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:40:56,223 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:40:56,232 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:00,687 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:41:01,067 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 11:41:01,069 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 11:41:01,340 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 11:41:01,341 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 11:41:01,688 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 11:41:01,690 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 11:41:02,114 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 11:41:02,133 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:02,140 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:02,953 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:02,960 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:03,568 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:03,576 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:04,344 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:04,353 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:04,999 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:05,009 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:08,092 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:08,102 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:09,008 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:09,018 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:09,663 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:09,673 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:12,702 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:12,712 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:13,533 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:13,545 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:14,791 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:14,801 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:17,507 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:17,518 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:19,346 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:19,357 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:20,076 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:20,085 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:20,447 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:20,456 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:20,963 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:20,973 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:22,532 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:22,541 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:23,127 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:23,137 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:24,352 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:24,362 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:24,924 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:24,934 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:31,544 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:31,554 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:31,897 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:31,905 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:32,419 - INFO - Loading basemap: USDA NAIP (via Esri)
+2025-10-09 11:41:32,429 - INFO - Basemap USDA NAIP (via Esri) loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:36,918 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:36,928 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:37,266 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:37,277 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:41:37,836 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:41:37,846 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:16,227 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:16,238 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:20,893 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:20,904 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:24,140 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:24,151 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:26,360 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:26,371 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:37,325 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:37,336 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:37,986 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:37,997 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:42,241 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:42,251 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:42:42,422 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:42:42,433 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 11:43:10,590 - INFO - Loading basemap: Google Satellite
+2025-10-09 11:43:10,600 - INFO - Basemap Google Satellite loaded successfully at [41.8779802, -87.62395760000001]
+2025-10-09 12:04:16,793 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 12:04:17,261 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 12:04:17,265 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 12:04:18,632 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 12:04:18,632 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 12:04:18,811 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 12:04:18,812 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 12:04:19,123 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 12:04:19,137 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:19,141 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:21,898 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:21,904 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:22,242 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:22,251 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:31,740 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:31,750 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:32,219 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:32,229 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:32,980 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:32,990 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:33,948 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:33,960 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:38,453 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:38,465 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 12:04:41,016 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:41,027 - INFO - Basemap Esri World Imagery loaded successfully at [41.87802739999999, -87.6239718]
+2025-10-09 12:04:41,515 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:41,524 - INFO - Basemap Esri World Imagery loaded successfully at [41.87802739999999, -87.6239718]
+2025-10-09 12:04:42,054 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:42,063 - INFO - Basemap Esri World Imagery loaded successfully at [41.87802739999999, -87.6239718]
+2025-10-09 12:04:44,066 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:44,079 - INFO - Basemap Esri World Imagery loaded successfully at [41.87802739999999, -87.6239718]
+2025-10-09 12:04:45,863 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:45,873 - INFO - Basemap Esri World Imagery loaded successfully at [41.87802739999999, -87.6239718]
+2025-10-09 12:04:49,872 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:49,878 - INFO - Basemap Esri World Imagery loaded successfully at [41.87802739999999, -87.6239718]
+2025-10-09 12:04:51,977 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:51,985 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779586, -87.6239544]
+2025-10-09 12:04:52,162 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:52,173 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779586, -87.6239544]
+2025-10-09 12:04:53,250 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:53,277 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779586, -87.6239544]
+2025-10-09 12:04:54,130 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:54,138 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779586, -87.6239544]
+2025-10-09 12:04:54,751 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 12:04:54,761 - INFO - Basemap Esri World Imagery loaded successfully at [41.8779586, -87.6239544]
+2025-10-09 13:05:54,129 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 13:05:54,612 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 13:05:54,615 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 13:05:54,901 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 13:05:54,903 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 13:05:55,125 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 13:05:55,128 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 13:05:55,382 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 13:05:55,404 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:05:55,415 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:05:58,501 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:05:58,506 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:05:58,770 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:05:58,777 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:06:12,574 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:12,585 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:06:13,423 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:13,431 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:06:14,667 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:14,680 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:06:21,240 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:21,250 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:06:28,453 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:28,463 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:06:28,641 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:28,651 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:06:29,919 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:29,927 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:06:30,711 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:30,721 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:06:58,637 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:58,648 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:06:59,782 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:06:59,789 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:07:00,646 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:07:00,658 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:07:01,517 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:07:01,527 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:07:02,783 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:07:02,791 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:07:03,750 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:07:03,761 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:07:10,086 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:07:10,099 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:08:15,907 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:08:15,917 - INFO - Basemap Esri World Imagery loaded successfully at [41.8778888, -87.623888]
+2025-10-09 13:12:31,275 - INFO - Testing NAIP endpoint: https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json
+2025-10-09 13:12:31,710 - INFO - NAIP endpoint SUCCESS - Status: 200
+2025-10-09 13:12:31,713 - INFO - Testing Esri World Imagery endpoint: https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 13:12:31,907 - INFO - Esri World Imagery endpoint SUCCESS - Status: 200
+2025-10-09 13:12:31,909 - INFO - Testing Google Satellite endpoint: https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0
+2025-10-09 13:12:32,098 - INFO - Google Satellite endpoint SUCCESS - Status: 200
+2025-10-09 13:12:32,099 - INFO - Testing Esri Clarity endpoint: https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer?f=json
+2025-10-09 13:12:32,403 - INFO - Esri Clarity endpoint SUCCESS - Status: 200
+2025-10-09 13:12:32,422 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:12:32,427 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:12:35,157 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:12:35,165 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]
+2025-10-09 13:12:35,559 - INFO - Loading basemap: Esri World Imagery
+2025-10-09 13:12:35,569 - INFO - Basemap Esri World Imagery loaded successfully at [41.8781, -87.6298]

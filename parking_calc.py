@@ -448,9 +448,32 @@ with col1:
             params = st.session_state.layout_params
             polygon_coords = params['polygon']
             
+            # Add viewing options
+            col_3d1, col_3d2 = st.columns(2)
+            with col_3d1:
+                view_style = st.selectbox(
+                    "3D View Style",
+                    ["Stacked (Compact)", "Exploded (Separated Levels)"],
+                    help="Exploded view separates levels for easier inspection"
+                )
+            with col_3d2:
+                show_labels = st.checkbox("Show Level Labels", value=True)
+            
             # Get parking spaces from session state (we'll need to store them)
             if 'parking_spaces_3d' in st.session_state:
                 all_spaces_3d = []
+                label_data = []
+                
+                # Calculate center for labels
+                lats = [coord[1] for coord in polygon_coords]
+                lons = [coord[0] for coord in polygon_coords]
+                center_lat = sum(lats) / len(lats)
+                center_lon = sum(lons) / len(lons)
+                
+                # Calculate bounds for exploded view offset
+                lat_range = max(lats) - min(lats)
+                lon_range = max(lons) - min(lons)
+                max_range = max(lat_range, lon_range)
                 
                 for level in range(num_levels):
                     # Calculate elevation for this level
@@ -469,57 +492,185 @@ with col1:
                         # Green to yellow gradient for above ground
                         color = [100 + (level * 30), 200 - (level * 20), 50, 200]
                     
+                    # Calculate horizontal offset for exploded view
+                    if view_style == "Exploded (Separated Levels)":
+                        # Offset each level horizontally for better picking
+                        offset_multiplier = 1.5
+                        horizontal_offset_lon = (level - num_levels/2) * max_range * offset_multiplier
+                        horizontal_offset_lat = 0
+                    else:
+                        horizontal_offset_lon = 0
+                        horizontal_offset_lat = 0
+                    
                     # Add each parking space at this level
-                    for space in st.session_state.parking_spaces_3d:
+                    for idx, space in enumerate(st.session_state.parking_spaces_3d):
+                        # Apply horizontal offset to polygon coordinates
+                        offset_coords = [
+                            (coord[0] + horizontal_offset_lon, coord[1] + horizontal_offset_lat) 
+                            for coord in space['coords']
+                        ]
+                        
                         space_3d = {
-                            'polygon': space['coords'],
+                            'polygon': offset_coords,
                             'elevation': elevation,
                             'height': 2.5,  # Car height
                             'color': color,
-                            'level': level_name
+                            'level': level_name,
+                            'space_id': f"{level_name}-{idx+1}",
+                            'level_number': level + 1
                         }
                         all_spaces_3d.append(space_3d)
+                    
+                    # Add level label
+                    if show_labels:
+                        label_position = [
+                            center_lon + horizontal_offset_lon,
+                            center_lat + horizontal_offset_lat
+                        ]
+                        
+                        # For exploded view, add a large level identifier above
+                        if view_style == "Exploded (Separated Levels)":
+                            label_data.append({
+                                'position': label_position,
+                                'text': level_name,
+                                'elevation': elevation + 10,  # Well above the parking spaces
+                                'level': level_name,
+                                'size': 48,
+                                'color': [255, 255, 100, 255]  # Yellow for visibility
+                            })
+                        
+                        # Also add smaller label at the center of each level's footprint
+                        label_data.append({
+                            'position': label_position,
+                            'text': level_name,
+                            'elevation': elevation + 1.5,  # Just above parking level
+                            'level': level_name,
+                            'size': 24,
+                            'color': [255, 255, 255, 255]  # White
+                        })
                 
                 # Create pydeck layers
+                layers = []
+                
+                # Parking spaces layer
                 polygon_layer = pdk.Layer(
                     "PolygonLayer",
                     all_spaces_3d,
                     get_polygon="polygon",
                     get_elevation="elevation",
                     elevation_scale=1,
+                    extruded=True,
                     get_fill_color="color",
                     get_line_color=[255, 255, 255],
                     line_width_min_pixels=1,
                     pickable=True,
-                    extruded=True,
                     wireframe=True,
                     auto_highlight=True,
+                    get_elevation_weight="height",
                 )
+                layers.append(polygon_layer)
+                
+                # Add visual level markers using ScatterplotLayer for better visibility
+                if show_labels and label_data:
+                    # Convert label data for scatterplot
+                    marker_data = []
+                    for label in label_data:
+                        marker_data.append({
+                            'position': label['position'] + [label['elevation']],
+                            'color': label['color'],
+                            'radius': 50,
+                            'text': label['text']
+                        })
+                    
+                    # Create marker layer
+                    marker_layer = pdk.Layer(
+                        "ScatterplotLayer",
+                        marker_data,
+                        get_position="position",
+                        get_fill_color="color",
+                        get_radius="radius",
+                        pickable=True,
+                        opacity=0.8,
+                        stroked=True,
+                        filled=True,
+                        radius_scale=1,
+                        radius_min_pixels=10,
+                        radius_max_pixels=50,
+                        line_width_min_pixels=1,
+                        get_line_color=[255, 255, 255],
+                    )
+                    layers.append(marker_layer)
+                    
+                    # Try TextLayer with simpler configuration
+                    try:
+                        text_layer = pdk.Layer(
+                            "TextLayer",
+                            label_data,
+                            get_position=["position[0]", "position[1]", "elevation"],
+                            get_text="text",
+                            get_size="size",
+                            get_color="color",
+                            get_angle=0,
+                            billboard=True,
+                        )
+                        layers.append(text_layer)
+                    except:
+                        # If TextLayer fails, markers will still show levels
+                        pass
                 
                 # Calculate view state
-                lats = [coord[1] for coord in polygon_coords]
-                lons = [coord[0] for coord in polygon_coords]
-                center_lat = sum(lats) / len(lats)
-                center_lon = sum(lons) / len(lons)
+                if view_style == "Exploded (Separated Levels)":
+                    # Zoom out to see all levels
+                    zoom_level = 17
+                else:
+                    zoom_level = 18
                 
                 # Set view state
                 view_state = pdk.ViewState(
                     latitude=center_lat,
                     longitude=center_lon,
-                    zoom=18,
+                    zoom=zoom_level,
                     pitch=45,
                     bearing=0,
                 )
                 
                 # Create deck
                 deck = pdk.Deck(
-                    layers=[polygon_layer],
+                    layers=layers,
                     initial_view_state=view_state,
                     map_style="satellite",
-                    tooltip={"text": "Level: {level}\nElevation: {elevation}m"},
+                    tooltip={
+                        "html": "<b>Level:</b> {level}<br/><b>Elevation:</b> {elevation}m<br/><b>Space:</b> {space_id}",
+                        "style": {
+                            "backgroundColor": "steelblue",
+                            "color": "white",
+                            "fontSize": "14px",
+                            "padding": "10px"
+                        }
+                    },
                 )
                 
                 st.pydeck_chart(deck, use_container_width=True, height=600)
+                
+                # Add legend showing level colors
+                st.markdown("### Level Legend")
+                legend_cols = st.columns(min(num_levels, 5))
+                for level in range(num_levels):
+                    if structure_type == "Underground Parking (3D)":
+                        level_name = f"B{level + 1}"
+                        color = [30, 144, 255 - (level * 30)]
+                    else:
+                        level_name = f"Level {level + 1}"
+                        color = [100 + (level * 30), 200 - (level * 20), 50]
+                    
+                    col_idx = level % 5
+                    with legend_cols[col_idx]:
+                        st.markdown(
+                            f'<div style="background-color: rgb({color[0]}, {color[1]}, {color[2]}); '
+                            f'padding: 10px; border-radius: 5px; text-align: center; color: white; '
+                            f'font-weight: bold; margin: 5px;">{level_name}</div>',
+                            unsafe_allow_html=True
+                        )
                 
                 # Add 3D stats
                 total_spaces_all_levels = st.session_state.actual_spaces_drawn * num_levels
