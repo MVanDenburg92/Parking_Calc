@@ -4,6 +4,8 @@ from streamlit_folium import st_folium
 from shapely.geometry import Polygon
 import math
 import numpy as np
+import pydeck as pdk
+import pandas as pd
 
 st.set_page_config(page_title="Parking Space Estimator", layout="wide", initial_sidebar_state="expanded")
 
@@ -194,6 +196,56 @@ parking_type = st.sidebar.selectbox(
     ["Standard Perpendicular (90°)", "Angled (45°)", "Parallel", "Compact"]
 )
 
+# Structure type selection
+structure_type = st.sidebar.selectbox(
+    "Structure Type",
+    ["Surface Lot (2D)", "Parking Structure (3D)", "Underground Parking (3D)"],
+    help="Choose surface lot for traditional 2D view, or structure/underground for multi-level 3D analysis"
+)
+
+# Multi-level settings for 3D structures
+if structure_type != "Surface Lot (2D)":
+    st.sidebar.markdown("### 🏢 Multi-Level Settings")
+    
+    if structure_type == "Parking Structure (3D)":
+        num_levels = st.sidebar.number_input(
+            "Number of Levels",
+            min_value=1,
+            max_value=10,
+            value=3,
+            help="Number of parking levels in the structure"
+        )
+        floor_height = st.sidebar.number_input(
+            "Floor Height (m)",
+            min_value=2.5,
+            max_value=5.0,
+            value=3.5,
+            step=0.5,
+            help="Height between floors"
+        )
+        ground_level = 0  # At grade
+    else:  # Underground
+        num_levels = st.sidebar.number_input(
+            "Number of Underground Levels",
+            min_value=1,
+            max_value=5,
+            value=2,
+            help="Number of underground parking levels"
+        )
+        floor_height = st.sidebar.number_input(
+            "Floor Height (m)",
+            min_value=2.5,
+            max_value=4.0,
+            value=3.0,
+            step=0.5,
+            help="Height between underground floors"
+        )
+        ground_level = 0  # Underground starts below grade
+else:
+    num_levels = 1
+    floor_height = 0
+    ground_level = 0
+
 # Calculation method toggle
 calculation_method = st.sidebar.radio(
     "Calculation Method",
@@ -371,10 +423,114 @@ if search_button and address:
 
 st.markdown("---")
 
+# Add view mode selector
+view_mode = st.radio(
+    "View Mode",
+    ["2D Map View", "3D Structure View"],
+    horizontal=True,
+    disabled=(structure_type == "Surface Lot (2D)")
+)
+
+if structure_type == "Surface Lot (2D)":
+    st.info("💡 Select 'Parking Structure' or 'Underground Parking' in the sidebar to enable 3D view")
+
 col1, col2 = st.columns([2, 1])
 
 with col1:
     st.subheader("Draw Your Parking Area")
+    
+    # Show 3D view if enabled and structure type is 3D
+    if view_mode == "3D Structure View" and structure_type != "Surface Lot (2D)" and st.session_state.get('show_layout'):
+        st.markdown("### 🏗️ 3D Structure Visualization")
+        
+        # Generate 3D parking data
+        if st.session_state.get('layout_params') and st.session_state.get('actual_spaces_drawn'):
+            params = st.session_state.layout_params
+            polygon_coords = params['polygon']
+            
+            # Get parking spaces from session state (we'll need to store them)
+            if 'parking_spaces_3d' in st.session_state:
+                all_spaces_3d = []
+                
+                for level in range(num_levels):
+                    # Calculate elevation for this level
+                    if structure_type == "Underground Parking (3D)":
+                        elevation = -floor_height * (level + 1)  # Negative for underground
+                        level_name = f"B{level + 1}"
+                    else:
+                        elevation = floor_height * level
+                        level_name = f"Level {level + 1}"
+                    
+                    # Color gradient for levels
+                    if structure_type == "Underground Parking (3D)":
+                        # Blue shades for underground
+                        color = [30, 144, 255 - (level * 30), 200]
+                    else:
+                        # Green to yellow gradient for above ground
+                        color = [100 + (level * 30), 200 - (level * 20), 50, 200]
+                    
+                    # Add each parking space at this level
+                    for space in st.session_state.parking_spaces_3d:
+                        space_3d = {
+                            'polygon': space['coords'],
+                            'elevation': elevation,
+                            'height': 2.5,  # Car height
+                            'color': color,
+                            'level': level_name
+                        }
+                        all_spaces_3d.append(space_3d)
+                
+                # Create pydeck layers
+                polygon_layer = pdk.Layer(
+                    "PolygonLayer",
+                    all_spaces_3d,
+                    get_polygon="polygon",
+                    get_elevation="elevation",
+                    elevation_scale=1,
+                    get_fill_color="color",
+                    get_line_color=[255, 255, 255],
+                    line_width_min_pixels=1,
+                    pickable=True,
+                    extruded=True,
+                    wireframe=True,
+                    auto_highlight=True,
+                )
+                
+                # Calculate view state
+                lats = [coord[1] for coord in polygon_coords]
+                lons = [coord[0] for coord in polygon_coords]
+                center_lat = sum(lats) / len(lats)
+                center_lon = sum(lons) / len(lons)
+                
+                # Set view state
+                view_state = pdk.ViewState(
+                    latitude=center_lat,
+                    longitude=center_lon,
+                    zoom=18,
+                    pitch=45,
+                    bearing=0,
+                )
+                
+                # Create deck
+                deck = pdk.Deck(
+                    layers=[polygon_layer],
+                    initial_view_state=view_state,
+                    map_style="satellite",
+                    tooltip={"text": "Level: {level}\nElevation: {elevation}m"},
+                )
+                
+                st.pydeck_chart(deck, use_container_width=True, height=600)
+                
+                # Add 3D stats
+                total_spaces_all_levels = st.session_state.actual_spaces_drawn * num_levels
+                st.success(f"🏢 Total Spaces Across {num_levels} Level(s): **{total_spaces_all_levels:,}**")
+            else:
+                st.warning("Generate parking layout first to see 3D visualization")
+        else:
+            st.info("Draw a polygon and generate parking layout to see 3D structure")
+    else:
+        # Show regular 2D map view
+        st.markdown("### 🗺️ 2D Map View" if structure_type != "Surface Lot (2D)" else "")
     
     # Define basemap tiles based on selection
     basemap_endpoints = {
@@ -738,6 +894,16 @@ with col1:
         
         # Store actual number of spaces drawn
         st.session_state.actual_spaces_drawn = len(parking_spaces)
+        
+        # Store parking spaces for 3D visualization
+        parking_spaces_3d = []
+        for space in parking_spaces:
+            parking_spaces_3d.append({
+                'coords': space[0],
+                'type': 'parking'
+            })
+        st.session_state.parking_spaces_3d = parking_spaces_3d
+        
         add_app_log(f"Drew {len(parking_spaces)} parking spaces on map", "INFO")
         
         # Add legend
@@ -797,43 +963,66 @@ with col2:
                 
                 # Calculate based on method
                 if calculation_method == "Area per Space (ITE Standard)":
-                    estimated_spaces = int(area_m2 / area_per_space)
+                    estimated_spaces_per_level = int(area_m2 / area_per_space)
                     calc_method_stored = "Area per Space (ITE Standard)"
                     area_per_space_stored = area_per_space
                 else:
-                    estimated_spaces = int((area_m2 * efficiency) / space_area)
+                    estimated_spaces_per_level = int((area_m2 * efficiency) / space_area)
                     calc_method_stored = "Efficiency Factor"
                     area_per_space_stored = None
                 
-                add_app_log(f"Estimated parking spaces: {estimated_spaces} (Method: {calc_method_stored})", "INFO")
+                # Multiply by number of levels for structures
+                estimated_spaces = estimated_spaces_per_level * num_levels
+                
+                add_app_log(f"Estimated parking spaces: {estimated_spaces} ({estimated_spaces_per_level}/level × {num_levels} levels) (Method: {calc_method_stored})", "INFO")
                 
                 # Store calculation results
                 st.session_state.calculation_results = {
                     'area_m2': area_m2,
                     'space_area': space_area,
                     'estimated_spaces': estimated_spaces,
+                    'estimated_spaces_per_level': estimated_spaces_per_level,
+                    'num_levels': num_levels,
                     'efficiency': efficiency,
                     'space_width': space_width,
                     'space_length': space_length,
                     'aisle_width': aisle_width,
                     'calculation_method': calc_method_stored,
-                    'area_per_space': area_per_space_stored
+                    'area_per_space': area_per_space_stored,
+                    'structure_type': structure_type
                 }
     
     # Always display results if they exist in session state
     if st.session_state.calculation_results:
         results = st.session_state.calculation_results
         
-        st.metric("Total Area", f"{results['area_m2']:,.1f} m²")
-        st.metric("Total Area", f"{results['area_m2'] * 10.764:,.1f} ft²")
+        # Show structure type if multi-level
+        if results.get('structure_type') != "Surface Lot (2D)":
+            st.info(f"🏢 **{results.get('structure_type')}**\n\n{results.get('num_levels', 1)} Level(s)")
         
-        # Always show estimated spaces
-        st.metric("Estimated Parking Spaces", f"{results['estimated_spaces']:,}")
+        st.metric("Total Area (per level)", f"{results['area_m2']:,.1f} m²")
+        st.metric("Total Area (per level)", f"{results['area_m2'] * 10.764:,.1f} ft²")
+        
+        # Show per-level and total estimates
+        if results.get('num_levels', 1) > 1:
+            st.metric("Estimated Spaces (per level)", f"{results.get('estimated_spaces_per_level', 0):,}")
+            st.metric("Estimated Total Spaces", f"{results['estimated_spaces']:,}", 
+                     help=f"{results.get('estimated_spaces_per_level', 0)} spaces × {results.get('num_levels', 1)} levels")
+        else:
+            st.metric("Estimated Parking Spaces", f"{results['estimated_spaces']:,}")
         
         # Show actual drawn spaces if layout is displayed
         if st.session_state.get('show_layout') and st.session_state.get('actual_spaces_drawn'):
-            st.metric("Actual Parking Spaces", f"{st.session_state.actual_spaces_drawn:,}", 
-                     delta=f"{st.session_state.actual_spaces_drawn - results['estimated_spaces']} vs estimate")
+            actual_per_level = st.session_state.actual_spaces_drawn
+            actual_total = actual_per_level * results.get('num_levels', 1)
+            
+            if results.get('num_levels', 1) > 1:
+                st.metric("Actual Spaces (per level)", f"{actual_per_level:,}")
+                st.metric("Actual Total Spaces", f"{actual_total:,}",
+                         delta=f"{actual_total - results['estimated_spaces']} vs estimate")
+            else:
+                st.metric("Actual Parking Spaces", f"{actual_per_level:,}", 
+                         delta=f"{actual_per_level - results['estimated_spaces']} vs estimate")
         
         st.markdown("---")
         st.markdown("**Breakdown:**")
