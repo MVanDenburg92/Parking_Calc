@@ -81,8 +81,53 @@ def test_endpoint_availability(name, url):
 
 # Test NAIP endpoint availability
 def test_naip_availability():
-    test_url = "https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json"
-    return test_endpoint_availability("NAIP", test_url)
+    # Test both the service endpoint AND an actual tile
+    try:
+        import requests
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        
+        # First test the service metadata
+        service_url = "https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json"
+        logging.info(f"Testing NAIP service endpoint: {service_url}")
+        add_app_log(f"Testing NAIP service endpoint", "INFO")
+        
+        response = requests.get(service_url, verify=False, timeout=5)
+        
+        if response.status_code != 200:
+            logging.error(f"NAIP service FAILED - Status: {response.status_code}")
+            add_app_log(f"NAIP service FAILED - Status: {response.status_code}", "ERROR")
+            return False
+        
+        # Now test an actual tile to verify imagery is available
+        # Test a tile over continental US (zoom 10, somewhere in middle of country)
+        tile_url = "https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer/tile/10/200/400"
+        logging.info(f"Testing NAIP tile availability: {tile_url}")
+        add_app_log(f"Testing NAIP tile availability", "INFO")
+        
+        tile_response = requests.get(tile_url, verify=False, timeout=5)
+        
+        if tile_response.status_code == 200 and len(tile_response.content) > 1000:
+            logging.info(f"NAIP tiles available - Status: {tile_response.status_code}")
+            add_app_log(f"NAIP tiles AVAILABLE", "INFO")
+            return True
+        else:
+            logging.error(f"NAIP tiles unavailable - Status: {tile_response.status_code}, Size: {len(tile_response.content)}")
+            add_app_log(f"NAIP tiles UNAVAILABLE (service running but no imagery)", "ERROR")
+            return False
+            
+    except requests.exceptions.Timeout as e:
+        logging.error(f"NAIP endpoint TIMEOUT - {str(e)}")
+        add_app_log(f"NAIP endpoint TIMEOUT", "ERROR")
+        return False
+    except requests.exceptions.ConnectionError as e:
+        logging.error(f"NAIP endpoint CONNECTION ERROR - {str(e)}")
+        add_app_log(f"NAIP endpoint CONNECTION ERROR", "ERROR")
+        return False
+    except Exception as e:
+        logging.error(f"NAIP endpoint UNKNOWN ERROR - {type(e).__name__}: {str(e)}")
+        add_app_log(f"NAIP endpoint ERROR: {type(e).__name__}", "ERROR")
+        return False
 
 # Test all basemap endpoints on startup
 def test_all_basemaps():
@@ -255,79 +300,78 @@ calculation_method = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 
-if calculation_method == "Efficiency Factor":
-    # Parking space dimensions (in meters)
-    if parking_type == "Standard Perpendicular (90°)":
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
-        default_efficiency = 0.85
-    elif parking_type == "Angled (45°)":
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
-        default_efficiency = 0.80
-    elif parking_type == "Parallel":
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
-        default_efficiency = 0.65
-    else:  # Compact
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
-        default_efficiency = 0.87
-    
-    # User-adjustable efficiency factor
-    efficiency = st.sidebar.slider(
-        "Efficiency Factor",
-        min_value=0.50,
-        max_value=0.95,
-        value=default_efficiency,
-        step=0.05,
-        help="Accounts for circulation, landscaping, and access. Adjust based on site constraints."
-    )
-    
-    st.sidebar.info(f"**Efficiency Factor:** {efficiency*100}%\n\n⚠️ **Note:** Efficiency factors are practical estimates, not official standards.\n\nThis accounts for:\n- Driving aisles\n- Access routes\n- Landscape areas\n- Pedestrian walkways")
+with st.sidebar.expander("🅿️ Space Settings", expanded=True):
+    if calculation_method == "Efficiency Factor":
+        # Parking space dimensions (in meters)
+        if parking_type == "Standard Perpendicular (90°)":
+            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
+            default_efficiency = 0.85
+        elif parking_type == "Angled (45°)":
+            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
+            default_efficiency = 0.80
+        elif parking_type == "Parallel":
+            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
+            default_efficiency = 0.65
+        else:  # Compact
+            space_width = st.number_input("Space Width (m)", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
+            default_efficiency = 0.87
+        
+        # User-adjustable efficiency factor
+        efficiency = st.slider(
+            "Efficiency Factor",
+            min_value=0.50,
+            max_value=0.95,
+            value=default_efficiency,
+            step=0.05,
+            help="Accounts for circulation, landscaping, and access. Adjust based on site constraints."
+        )
+        
+        st.info(f"**Efficiency Factor:** {efficiency*100}%\n\n⚠️ **Note:** Efficiency factors are practical estimates, not official standards.\n\nThis accounts for:\n- Driving aisles\n- Access routes\n- Landscape areas\n- Pedestrian walkways")
 
-else:  # Area per Space method
-    if parking_type == "Standard Perpendicular (90°)":
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
-        default_area_per_space = 32.5  # ~350 sq ft
-    elif parking_type == "Angled (45°)":
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
-        default_area_per_space = 37.2  # ~400 sq ft
-    elif parking_type == "Parallel":
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
-        default_area_per_space = 46.5  # ~500 sq ft
-    else:  # Compact
-        space_width = st.sidebar.number_input("Space Width (m)", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
-        space_length = st.sidebar.number_input("Space Length (m)", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
-        aisle_width = st.sidebar.number_input("Aisle Width (m)", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
-        default_area_per_space = 27.9  # ~300 sq ft
-    
-    # User-adjustable area per space
-    area_per_space = st.sidebar.number_input(
-        "Area per Space (m²)",
-        min_value=20.0,
-        max_value=60.0,
-        value=default_area_per_space,
-        step=1.0,
-        help="Total area including space + share of aisle. Based on ITE standards."
-    )
-    
-    # Calculate implied efficiency for internal use
-    space_area = space_width * space_length
-    efficiency = space_area / area_per_space if area_per_space > 0 else 0.85
-    
-    st.sidebar.info(f"**ITE Standard Method**\n\n📚 Based on Institute of Transportation Engineers (ITE) *Parking Generation* guidelines.\n\n**Typical ranges:**\n- 90° parking: 28-37 m² (300-400 sf)\n- Angled: 33-42 m² (350-450 sf)\n- Parallel: 42-56 m² (450-600 sf)\n\nIncludes space + circulation.")
-
+    else:  # Area per Space method
+        if parking_type == "Standard Perpendicular (90°)":
+            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
+            default_area_per_space = 32.5  # ~350 sq ft
+        elif parking_type == "Angled (45°)":
+            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
+            default_area_per_space = 37.2  # ~400 sq ft
+        elif parking_type == "Parallel":
+            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
+            default_area_per_space = 46.5  # ~500 sq ft
+        else:  # Compact
+            space_width = st.number_input("Space Width (m)", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
+            space_length = st.number_input("Space Length (m)", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
+            aisle_width = st.number_input("Aisle Width (m)", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
+            default_area_per_space = 27.9  # ~300 sq ft
+        
+        # User-adjustable area per space
+        area_per_space = st.number_input(
+            "Area per Space (m²)",
+            min_value=20.0,
+            max_value=60.0,
+            value=default_area_per_space,
+            step=1.0,
+            help="Total area including space + share of aisle. Based on ITE standards."
+        )
+        
+        # Calculate implied efficiency for internal use
+        space_area = space_width * space_length
+        efficiency = space_area / area_per_space if area_per_space > 0 else 0.85
+        
 st.sidebar.markdown("---")
 
 # Add reference section
@@ -449,20 +493,38 @@ with col1:
             polygon_coords = params['polygon']
             
             # Add viewing options
-            col_3d1, col_3d2 = st.columns(2)
+            col_3d1, col_3d2 = st.columns([2, 1])
             with col_3d1:
                 view_style = st.selectbox(
                     "3D View Style",
-                    ["Stacked (Compact)", "Exploded (Separated Levels)"],
-                    help="Exploded view separates levels for easier inspection"
+                    ["Stacked (Compact)", "Exploded (All Levels)", "Exploded (Focus Mode)"],
+                    help="Focus mode shows one level clearly with others transparent"
                 )
-            with col_3d2:
-                show_labels = st.checkbox("Show Level Labels", value=True)
             
-            # Get parking spaces from session state (we'll need to store them)
+            # Add level selector for focus mode
+            if view_style == "Exploded (Focus Mode)":
+                with col_3d2:
+                    if structure_type == "Underground Parking (3D)":
+                        level_options = [f"B{i+1}" for i in range(num_levels)]
+                    else:
+                        level_options = [f"Level {i+1}" for i in range(num_levels)]
+                    
+                    focused_level = st.selectbox(
+                        "Focus on Level",
+                        level_options,
+                        help="Selected level will be solid, others transparent"
+                    )
+                    # Extract level number
+                    if "B" in focused_level:
+                        focused_level_num = int(focused_level.replace("B", "")) - 1
+                    else:
+                        focused_level_num = int(focused_level.replace("Level ", "")) - 1
+            else:
+                focused_level_num = None
+            
+            # Get parking spaces from session state
             if 'parking_spaces_3d' in st.session_state:
                 all_spaces_3d = []
-                label_data = []
                 
                 # Calculate center for labels
                 lats = [coord[1] for coord in polygon_coords]
@@ -484,16 +546,46 @@ with col1:
                         elevation = floor_height * level
                         level_name = f"Level {level + 1}"
                     
-                    # Color gradient for levels
+                    # Color gradient for levels - MORE VIBRANT
                     if structure_type == "Underground Parking (3D)":
-                        # Blue shades for underground
-                        color = [30, 144, 255 - (level * 30), 200]
+                        # Distinct vibrant colors for underground levels
+                        underground_colors = [
+                            [0, 150, 255, 230],      # Bright electric blue - B1
+                            [0, 200, 255, 230],      # Cyan blue - B2
+                            [100, 220, 255, 230],    # Light cyan - B3
+                            [150, 240, 255, 230],    # Very light cyan - B4
+                            [200, 250, 255, 230],    # Pale cyan - B5
+                        ]
+                        base_color = underground_colors[min(level, 4)]
                     else:
-                        # Green to yellow gradient for above ground
-                        color = [100 + (level * 30), 200 - (level * 20), 50, 200]
+                        # Distinct VIBRANT colors for above-ground levels
+                        aboveground_colors = [
+                            [0, 200, 0, 230],        # Vibrant green - Level 1
+                            [255, 230, 0, 230],      # Bright yellow - Level 2
+                            [255, 165, 0, 230],      # Bright orange - Level 3
+                            [255, 50, 50, 230],      # Bright red - Level 4
+                            [200, 0, 255, 230],      # Bright purple - Level 5
+                            [255, 20, 147, 230],     # Vibrant pink - Level 6
+                            [0, 255, 255, 230],      # Bright cyan - Level 7
+                            [255, 100, 0, 230],      # Bright red-orange - Level 8
+                            [220, 100, 255, 230],    # Bright orchid - Level 9
+                            [50, 255, 150, 230],     # Bright mint green - Level 10
+                        ]
+                        base_color = aboveground_colors[min(level, 9)]
+                    
+                    # Apply transparency for focus mode
+                    if view_style == "Exploded (Focus Mode)" and focused_level_num is not None:
+                        if level == focused_level_num:
+                            # Focused level - full opacity
+                            color = base_color
+                        else:
+                            # Other levels - make transparent
+                            color = [base_color[0], base_color[1], base_color[2], 40]
+                    else:
+                        color = base_color
                     
                     # Calculate horizontal offset for exploded view
-                    if view_style == "Exploded (Separated Levels)":
+                    if view_style in ["Exploded (All Levels)", "Exploded (Focus Mode)"]:
                         # Offset each level horizontally for better picking
                         offset_multiplier = 1.5
                         horizontal_offset_lon = (level - num_levels/2) * max_range * offset_multiplier
@@ -520,39 +612,11 @@ with col1:
                             'level_number': level + 1
                         }
                         all_spaces_3d.append(space_3d)
-                    
-                    # Add level label
-                    if show_labels:
-                        label_position = [
-                            center_lon + horizontal_offset_lon,
-                            center_lat + horizontal_offset_lat
-                        ]
-                        
-                        # For exploded view, add a large level identifier above
-                        if view_style == "Exploded (Separated Levels)":
-                            label_data.append({
-                                'position': label_position,
-                                'text': level_name,
-                                'elevation': elevation + 10,  # Well above the parking spaces
-                                'level': level_name,
-                                'size': 48,
-                                'color': [255, 255, 100, 255]  # Yellow for visibility
-                            })
-                        
-                        # Also add smaller label at the center of each level's footprint
-                        label_data.append({
-                            'position': label_position,
-                            'text': level_name,
-                            'elevation': elevation + 1.5,  # Just above parking level
-                            'level': level_name,
-                            'size': 24,
-                            'color': [255, 255, 255, 255]  # White
-                        })
                 
                 # Create pydeck layers
                 layers = []
                 
-                # Parking spaces layer
+                # Parking spaces layer with vibrant colors
                 polygon_layer = pdk.Layer(
                     "PolygonLayer",
                     all_spaces_3d,
@@ -561,65 +625,19 @@ with col1:
                     elevation_scale=1,
                     extruded=True,
                     get_fill_color="color",
-                    get_line_color=[255, 255, 255],
-                    line_width_min_pixels=1,
+                    get_line_color=[255, 255, 255, 255],
+                    line_width_min_pixels=2,
                     pickable=True,
                     wireframe=True,
                     auto_highlight=True,
                     get_elevation_weight="height",
+                    material=True,
+                    filled=True,
                 )
                 layers.append(polygon_layer)
                 
-                # Add visual level markers using ScatterplotLayer for better visibility
-                if show_labels and label_data:
-                    # Convert label data for scatterplot
-                    marker_data = []
-                    for label in label_data:
-                        marker_data.append({
-                            'position': label['position'] + [label['elevation']],
-                            'color': label['color'],
-                            'radius': 50,
-                            'text': label['text']
-                        })
-                    
-                    # Create marker layer
-                    marker_layer = pdk.Layer(
-                        "ScatterplotLayer",
-                        marker_data,
-                        get_position="position",
-                        get_fill_color="color",
-                        get_radius="radius",
-                        pickable=True,
-                        opacity=0.8,
-                        stroked=True,
-                        filled=True,
-                        radius_scale=1,
-                        radius_min_pixels=10,
-                        radius_max_pixels=50,
-                        line_width_min_pixels=1,
-                        get_line_color=[255, 255, 255],
-                    )
-                    layers.append(marker_layer)
-                    
-                    # Try TextLayer with simpler configuration
-                    try:
-                        text_layer = pdk.Layer(
-                            "TextLayer",
-                            label_data,
-                            get_position=["position[0]", "position[1]", "elevation"],
-                            get_text="text",
-                            get_size="size",
-                            get_color="color",
-                            get_angle=0,
-                            billboard=True,
-                        )
-                        layers.append(text_layer)
-                    except:
-                        # If TextLayer fails, markers will still show levels
-                        pass
-                
                 # Calculate view state
-                if view_style == "Exploded (Separated Levels)":
+                if view_style in ["Exploded (All Levels)", "Exploded (Focus Mode)"]:
                     # Zoom out to see all levels
                     zoom_level = 17
                 else:
@@ -655,20 +673,40 @@ with col1:
                 # Add legend showing level colors
                 st.markdown("### Level Legend")
                 legend_cols = st.columns(min(num_levels, 5))
+                
                 for level in range(num_levels):
                     if structure_type == "Underground Parking (3D)":
                         level_name = f"B{level + 1}"
-                        color = [30, 144, 255 - (level * 30)]
+                        underground_colors = [
+                            [0, 150, 255],      # Bright electric blue
+                            [0, 200, 255],      # Cyan blue
+                            [100, 220, 255],    # Light cyan
+                            [150, 240, 255],    # Very light cyan
+                            [200, 250, 255],    # Pale cyan
+                        ]
+                        color = underground_colors[min(level, 4)]
                     else:
                         level_name = f"Level {level + 1}"
-                        color = [100 + (level * 30), 200 - (level * 20), 50]
+                        aboveground_colors = [
+                            [0, 200, 0],        # Vibrant green
+                            [255, 230, 0],      # Bright yellow
+                            [255, 165, 0],      # Bright orange
+                            [255, 50, 50],      # Bright red
+                            [200, 0, 255],      # Bright purple
+                            [255, 20, 147],     # Vibrant pink
+                            [0, 255, 255],      # Bright cyan
+                            [255, 100, 0],      # Bright red-orange
+                            [220, 100, 255],    # Bright orchid
+                            [50, 255, 150],     # Bright mint green
+                        ]
+                        color = aboveground_colors[min(level, 9)]
                     
                     col_idx = level % 5
                     with legend_cols[col_idx]:
                         st.markdown(
                             f'<div style="background-color: rgb({color[0]}, {color[1]}, {color[2]}); '
                             f'padding: 10px; border-radius: 5px; text-align: center; color: white; '
-                            f'font-weight: bold; margin: 5px;">{level_name}</div>',
+                            f'font-weight: bold; margin: 5px; border: 2px solid rgba(255,255,255,0.3);">{level_name}</div>',
                             unsafe_allow_html=True
                         )
                 
@@ -1230,29 +1268,7 @@ with col2:
 
 st.markdown("---")
 
-# Add expandable log viewer at the bottom
-with st.expander("📋 Activity Logs", expanded=False):
-    st.markdown("**Real-time application activity:**")
-    
-    # Display logs in reverse chronological order
-    if st.session_state.app_logs:
-        log_text = "\n".join(reversed(st.session_state.app_logs[-50:]))  # Show last 50 logs
-        st.text_area("Activity Log", value=log_text, height=200, disabled=True, key="log_display")
-        
-        # Add buttons to manage logs
-        col_log1, col_log2 = st.columns(2)
-        with col_log1:
-            if st.button("🔄 Refresh Logs"):
-                st.rerun()
-        with col_log2:
-            if st.button("🗑️ Clear Logs"):
-                st.session_state.app_logs = []
-                st.rerun()
-    else:
-        st.info("No activity logged yet. Start by drawing a polygon or testing endpoints.")
-
 # Additional info
-st.markdown("---")
 st.markdown("""
 ### About This Tool
 This estimator calculates parking capacity based on:
