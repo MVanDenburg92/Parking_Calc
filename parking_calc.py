@@ -190,7 +190,7 @@ st.sidebar.header("Parking Configuration")
 # Unit system toggle
 unit_system = st.sidebar.radio(
     "Unit System",
-    ["Metric", "Imperial"],
+    ["Imperial", "Metric"],
     horizontal=True,
     help="Choose between metric (meters) or imperial (feet) measurements"
 )
