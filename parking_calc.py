@@ -173,6 +173,29 @@ if 'calculation_results' not in st.session_state:
 # Sidebar for parameters
 st.sidebar.header("Parking Configuration")
 
+# Unit system toggle
+unit_system = st.sidebar.radio(
+    "Unit System",
+    ["Metric", "Imperial"],
+    horizontal=True,
+    help="Choose between metric (meters) or imperial (feet) measurements"
+)
+
+# Conversion factors
+if unit_system == "Imperial":
+    # Convert from meters to feet
+    length_conversion = 3.28084
+    area_conversion = 10.764
+    length_unit = "ft"
+    area_unit = "sf"
+else:
+    length_conversion = 1.0
+    area_conversion = 1.0
+    length_unit = "m"
+    area_unit = "m²"
+
+st.sidebar.markdown("---")
+
 # Basemap selection - include NAIP if available
 basemap_options = [
     "Esri World Imagery",
@@ -260,14 +283,26 @@ if structure_type != "Surface Lot (2D)":
             value=3,
             help="Number of parking levels in the structure"
         )
-        floor_height = st.sidebar.number_input(
-            "Floor Height (m)",
-            min_value=2.5,
-            max_value=5.0,
-            value=3.5,
-            step=0.5,
-            help="Height between floors"
-        )
+        # Convert floor height based on unit system
+        if unit_system == "Imperial":
+            floor_height_display = st.sidebar.number_input(
+                f"Floor Height ({length_unit})",
+                min_value=8.0,
+                max_value=16.0,
+                value=11.5,
+                step=0.5,
+                help="Height between floors"
+            )
+            floor_height = floor_height_display / length_conversion  # Convert to meters
+        else:
+            floor_height = st.sidebar.number_input(
+                f"Floor Height ({length_unit})",
+                min_value=2.5,
+                max_value=5.0,
+                value=3.5,
+                step=0.5,
+                help="Height between floors"
+            )
         ground_level = 0  # At grade
     else:  # Underground
         num_levels = st.sidebar.number_input(
@@ -277,14 +312,26 @@ if structure_type != "Surface Lot (2D)":
             value=2,
             help="Number of underground parking levels"
         )
-        floor_height = st.sidebar.number_input(
-            "Floor Height (m)",
-            min_value=2.5,
-            max_value=4.0,
-            value=3.0,
-            step=0.5,
-            help="Height between underground floors"
-        )
+        # Convert floor height based on unit system
+        if unit_system == "Imperial":
+            floor_height_display = st.sidebar.number_input(
+                f"Floor Height ({length_unit})",
+                min_value=8.0,
+                max_value=13.0,
+                value=10.0,
+                step=0.5,
+                help="Height between underground floors"
+            )
+            floor_height = floor_height_display / length_conversion  # Convert to meters
+        else:
+            floor_height = st.sidebar.number_input(
+                f"Floor Height ({length_unit})",
+                min_value=2.5,
+                max_value=4.0,
+                value=3.0,
+                step=0.5,
+                help="Height between underground floors"
+            )
         ground_level = 0  # Underground starts below grade
 else:
     num_levels = 1
@@ -302,26 +349,59 @@ st.sidebar.markdown("---")
 
 with st.sidebar.expander("🅿️ Space Settings", expanded=True):
     if calculation_method == "Efficiency Factor":
-        # Parking space dimensions (in meters)
+        # Parking space dimensions
         if parking_type == "Standard Perpendicular (90°)":
-            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=11.5, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=16.4, min_value=14.8, max_value=19.7, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=19.7, min_value=16.4, max_value=26.2, step=1.0)
+                # Convert to meters for calculations
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
             default_efficiency = 0.85
         elif parking_type == "Angled (45°)":
-            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=11.5, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=18.0, min_value=16.4, max_value=21.3, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=13.1, min_value=11.5, max_value=19.7, step=1.0)
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
             default_efficiency = 0.80
         elif parking_type == "Parallel":
-            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=9.8, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=21.3, min_value=19.7, max_value=26.2, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=11.5, min_value=9.8, max_value=16.4, step=1.0)
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
             default_efficiency = 0.65
         else:  # Compact
-            space_width = st.number_input("Space Width (m)", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=7.5, min_value=6.5, max_value=9.2, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=14.8, min_value=13.1, max_value=18.0, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=18.0, min_value=16.4, max_value=23.0, step=1.0)
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
             default_efficiency = 0.87
         
         # User-adjustable efficiency factor
@@ -338,35 +418,82 @@ with st.sidebar.expander("🅿️ Space Settings", expanded=True):
 
     else:  # Area per Space method
         if parking_type == "Standard Perpendicular (90°)":
-            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
-            default_area_per_space = 32.5  # ~350 sq ft
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=11.5, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=16.4, min_value=14.8, max_value=19.7, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=19.7, min_value=16.4, max_value=26.2, step=1.0)
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+                default_area_per_space = 350  # sq ft
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
+                default_area_per_space = 32.5  # ~350 sq ft in m²
         elif parking_type == "Angled (45°)":
-            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
-            default_area_per_space = 37.2  # ~400 sq ft
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=11.5, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=18.0, min_value=16.4, max_value=21.3, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=13.1, min_value=11.5, max_value=19.7, step=1.0)
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+                default_area_per_space = 400  # sq ft
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
+                default_area_per_space = 37.2  # ~400 sq ft in m²
         elif parking_type == "Parallel":
-            space_width = st.number_input("Space Width (m)", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
-            default_area_per_space = 46.5  # ~500 sq ft
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=9.8, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=21.3, min_value=19.7, max_value=26.2, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=11.5, min_value=9.8, max_value=16.4, step=1.0)
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+                default_area_per_space = 500  # sq ft
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
+                default_area_per_space = 46.5  # ~500 sq ft in m²
         else:  # Compact
-            space_width = st.number_input("Space Width (m)", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
-            space_length = st.number_input("Space Length (m)", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
-            aisle_width = st.number_input("Aisle Width (m)", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
-            default_area_per_space = 27.9  # ~300 sq ft
+            if unit_system == "Imperial":
+                space_width_display = st.number_input(f"Space Width ({length_unit})", value=7.5, min_value=6.5, max_value=9.2, step=0.5)
+                space_length_display = st.number_input(f"Space Length ({length_unit})", value=14.8, min_value=13.1, max_value=18.0, step=0.5)
+                aisle_width_display = st.number_input(f"Aisle Width ({length_unit})", value=18.0, min_value=16.4, max_value=23.0, step=1.0)
+                space_width = space_width_display / length_conversion
+                space_length = space_length_display / length_conversion
+                aisle_width = aisle_width_display / length_conversion
+                default_area_per_space = 300  # sq ft
+            else:
+                space_width = st.number_input(f"Space Width ({length_unit})", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
+                space_length = st.number_input(f"Space Length ({length_unit})", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
+                aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
+                default_area_per_space = 27.9  # ~300 sq ft in m²
         
-        # User-adjustable area per space
-        area_per_space = st.number_input(
-            "Area per Space (m²)",
-            min_value=20.0,
-            max_value=60.0,
-            value=default_area_per_space,
-            step=1.0,
-            help="Total area including space + share of aisle. Based on ITE standards."
-        )
+        # User-adjustable area per space (with unit conversion)
+        if unit_system == "Imperial":
+            area_per_space_display = st.number_input(
+                f"Area per Space ({area_unit})",
+                min_value=200.0,
+                max_value=650.0,
+                value=float(default_area_per_space),
+                step=10.0,
+                help="Total area including space + share of aisle. Based on ITE standards."
+            )
+            area_per_space = area_per_space_display / area_conversion  # Convert to m²
+        else:
+            area_per_space = st.number_input(
+                f"Area per Space ({area_unit})",
+                min_value=20.0,
+                max_value=60.0,
+                value=default_area_per_space,
+                step=1.0,
+                help="Total area including space + share of aisle. Based on ITE standards."
+            )
         
         # Calculate implied efficiency for internal use
         space_area = space_width * space_length
@@ -392,9 +519,9 @@ with st.sidebar.expander("📚 Industry References"):
       - ADA/accessibility standards
     
     **Space Dimensions (Typical):**
-    - Standard: 2.4-2.7m × 4.9-5.5m
-    - Compact: 2.3-2.4m × 4.3-4.9m
-    - Accessible: 3.7m × 5.5m (min)
+    - Standard: 2.4-2.7m × 4.9-5.5m (8-9' × 16-18')
+    - Compact: 2.3-2.4m × 4.3-4.9m (7.5-8' × 14-16')
+    - Accessible: 3.7m × 5.5m (12' × 18') (min)
     
     **Note:** Requirements vary by jurisdiction.
     Always verify with local codes.
@@ -1189,8 +1316,12 @@ with col2:
         if results.get('structure_type') != "Surface Lot (2D)":
             st.info(f"🏢 **{results.get('structure_type')}**\n\n{results.get('num_levels', 1)} Level(s)")
         
-        st.metric("Total Area (per level)", f"{results['area_m2']:,.1f} m²")
-        st.metric("Total Area (per level)", f"{results['area_m2'] * 10.764:,.1f} ft²")
+        # Display area in selected unit system
+        if unit_system == "Imperial":
+            st.metric("Total Area (per level)", f"{results['area_m2'] * area_conversion:,.1f} {area_unit}")
+        else:
+            st.metric("Total Area (per level)", f"{results['area_m2']:,.1f} {area_unit}")
+            st.metric("Total Area (per level)", f"{results['area_m2'] * 10.764:,.1f} ft²")
         
         # Show per-level and total estimates
         if results.get('num_levels', 1) > 1:
@@ -1215,19 +1346,34 @@ with col2:
         
         st.markdown("---")
         st.markdown("**Breakdown:**")
-        st.write(f"• Space size: {results['space_width']}m × {results['space_length']}m")
-        st.write(f"• Space area: {results['space_area']:.1f} m²")
-        st.write(f"• Aisle width: {results['aisle_width']}m")
+        
+        # Display dimensions in selected unit system
+        if unit_system == "Imperial":
+            st.write(f"• Space size: {results['space_width'] * length_conversion:.1f}{length_unit} × {results['space_length'] * length_conversion:.1f}{length_unit}")
+            st.write(f"• Space area: {results['space_area'] * area_conversion:.1f} {area_unit}")
+            st.write(f"• Aisle width: {results['aisle_width'] * length_conversion:.1f}{length_unit}")
+        else:
+            st.write(f"• Space size: {results['space_width']:.1f}{length_unit} × {results['space_length']:.1f}{length_unit}")
+            st.write(f"• Space area: {results['space_area']:.1f} {area_unit}")
+            st.write(f"• Aisle width: {results['aisle_width']:.1f}{length_unit}")
         
         if 'calculation_method' in results and results['calculation_method'] == "Area per Space (ITE Standard)":
-            st.write(f"• Area per space: {results.get('area_per_space', 'N/A'):.1f} m² ({results.get('area_per_space', 0) * 10.764:.1f} sf)")
+            if unit_system == "Imperial":
+                st.write(f"• Area per space: {results.get('area_per_space', 0) * area_conversion:.1f} {area_unit}")
+            else:
+                st.write(f"• Area per space: {results.get('area_per_space', 'N/A'):.1f} {area_unit} ({results.get('area_per_space', 0) * 10.764:.1f} sf)")
             st.write(f"• Method: ITE Standard")
         else:
             st.write(f"• Efficiency: {results['efficiency']*100}%")
             st.write(f"• Method: Efficiency Factor")
         
-        spaces_per_sqm = results['estimated_spaces'] / results['area_m2']
-        st.markdown(f"**Density:** {spaces_per_sqm*100:.2f} spaces per 100m²")
+        # Calculate density based on unit system
+        if unit_system == "Imperial":
+            spaces_per_unit = results['estimated_spaces'] / (results['area_m2'] * area_conversion) * 1000  # per 1000 sf
+            st.markdown(f"**Density:** {spaces_per_unit:.2f} spaces per 1000{area_unit}")
+        else:
+            spaces_per_sqm = results['estimated_spaces'] / results['area_m2']
+            st.markdown(f"**Density:** {spaces_per_sqm*100:.2f} spaces per 100{area_unit}")
         
         st.markdown("---")
         
@@ -1269,7 +1415,7 @@ with col2:
 st.markdown("---")
 
 # Additional info
-st.markdown("""
+st.markdown(f"""
 ### About This Tool
 This estimator calculates parking capacity based on:
 - **Space dimensions** - Configurable per parking type
