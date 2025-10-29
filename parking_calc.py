@@ -9,18 +9,32 @@ import pandas as pd
 
 st.set_page_config(page_title="Parking Space Estimator", layout="wide", initial_sidebar_state="expanded")
 
-# Custom CSS to make sidebar wider
+# Custom CSS to make sidebar wider and handle collapse properly
 st.markdown("""
     <style>
-        section[data-testid="stSidebar"] {
+        /* Sidebar width when expanded */
+        section[data-testid="stSidebar"]:not([aria-expanded="false"]) {
+            width: 400px !important;
+            min-width: 400px !important;
+        }
+        section[data-testid="stSidebar"]:not([aria-expanded="false"]) > div {
             width: 400px !important;
         }
+        
+        /* Prevent overflow when collapsed */
+        section[data-testid="stSidebar"] {
+            overflow-x: hidden !important;
+        }
         section[data-testid="stSidebar"] > div {
-            width: 400px !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* Hide content properly when collapsed */
+        section[data-testid="stSidebar"][aria-expanded="false"] > div {
+            display: none !important;
         }
     </style>
 """, unsafe_allow_html=True)
-
 st.title("🅿️ Parking Space Estimator")
 st.markdown("Draw a polygon on the map to estimate how many parking spaces could fit in the area.")
 
