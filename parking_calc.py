@@ -278,12 +278,43 @@ parking_type = st.sidebar.selectbox(
     ["Standard Perpendicular (90°)", "Angled (45°)", "Parallel", "Compact"]
 )
 
-# Add layout orientation selector
+# Add layout orientation selector with Center Island option
 layout_orientation = st.sidebar.selectbox(
     "Layout Orientation",
-    ["Auto (Optimize)", "Row-Based (Horizontal)", "Column-Based (Vertical)", "Mixed (Both)"],
-    help="Choose how parking spaces are arranged"
+    [
+        "Auto (Best Fit)", 
+        "Row-Based (Horizontal)", 
+        "Column-Based (Vertical)",
+        "Center Island (Double-Loaded)",
+        "Center Island (Angled)"
+    ],
+    help="Choose how parking spaces are arranged. Center Island creates spaces on both sides of a central median."
 )
+
+# Add island width control for center island layouts
+if "Center Island" in layout_orientation:
+    st.sidebar.markdown("### Center Island Settings")
+    if unit_system == "Imperial":
+        island_width_display = st.sidebar.number_input(
+            f"Island/Median Width ({length_unit})",
+            min_value=5.0,
+            max_value=30.0,
+            value=15.0,
+            step=1.0,
+            help="Width of the center island/landscaped median"
+        )
+        island_width = island_width_display / length_conversion
+    else:
+        island_width = st.sidebar.number_input(
+            f"Island/Median Width ({length_unit})",
+            min_value=1.5,
+            max_value=10.0,
+            value=4.5,
+            step=0.5,
+            help="Width of the center island/landscaped median"
+        )
+else:
+    island_width = 0
 
 # Structure type selection
 structure_type = st.sidebar.selectbox(
@@ -1096,8 +1127,298 @@ with col1:
                             (x, y + width_deg - offset),
                             (x, y)
                         ]
+        # Determine orientation
+        if layout_orientation == "Auto (Best Fit)":
+            if aspect_ratio > 1.2:
+                use_rows = True
+                use_columns = False
+                use_center_island = False
+            elif aspect_ratio < 0.8:
+                use_rows = False
+                use_columns = True
+                use_center_island = False
+            else:
+                use_rows = True
+                use_columns = False
+                use_center_island = False
+        elif layout_orientation == "Row-Based (Horizontal)":
+            use_rows = True
+            use_columns = False
+            use_center_island = False
+        elif layout_orientation == "Column-Based (Vertical)":
+            use_rows = False
+            use_columns = True
+            use_center_island = False
+        elif layout_orientation == "Center Island (Double-Loaded)":
+            use_rows = False
+            use_columns = False
+            use_center_island = True
+            center_island_angled = False
+        elif layout_orientation == "Center Island (Angled)":
+            use_rows = False
+            use_columns = False
+            use_center_island = True
+            center_island_angled = True
+        else:
+            use_rows = True
+            use_columns = False
+            use_center_island = False
 
-        if "Perpendicular" in p_type or "Compact" in p_type:
+        # CENTER ISLAND LAYOUT
+        if use_center_island:
+            # Calculate center line of polygon
+            center_y = (bounds[1] + bounds[3]) / 2
+            center_x = (bounds[0] + bounds[2]) / 2
+            
+            island_w_deg_lat = island_width / lat_to_m
+            island_w_deg_lon = island_width / lon_to_m
+            
+            # Determine if island runs horizontally or vertically based on lot shape
+            if poly_width > poly_height:  # Wider lot - horizontal island
+                island_orientation = 'horizontal'
+                island_top = center_y + (island_w_deg_lat / 2)
+                island_bottom = center_y - (island_w_deg_lat / 2)
+                
+                # Draw the island on the map
+                island_coords = [
+                    (bounds[0], island_bottom),
+                    (bounds[2], island_bottom),
+                    (bounds[2], island_top),
+                    (bounds[0], island_top),
+                    (bounds[0], island_bottom)
+                ]
+                
+                if center_island_angled:
+                    # ANGLED PARKING on both sides of horizontal island
+                    angle_rad = np.radians(45)
+                    
+                    # South side (below island) - spaces point up
+                    current_x = bounds[0]
+                    aisle_bottom = island_bottom - aisle_w / lat_to_m
+                    
+                    while current_x < bounds[2]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        # Spaces angled upward toward island
+                        offset = space_l_deg * np.sin(angle_rad)
+                        space_coords = [
+                            (current_x, aisle_bottom),
+                            (current_x + space_w_deg, aisle_bottom),
+                            (current_x + space_w_deg + offset, aisle_bottom + space_l_deg * np.cos(angle_rad)),
+                            (current_x + offset, aisle_bottom + space_l_deg * np.cos(angle_rad)),
+                            (current_x, aisle_bottom)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.y < island_bottom:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_x += space_w_deg
+                    
+                    # North side (above island) - spaces point down
+                    current_x = bounds[0]
+                    aisle_top = island_top + aisle_w / lat_to_m
+                    
+                    while current_x < bounds[2]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        # Spaces angled downward toward island
+                        offset = space_l_deg * np.sin(angle_rad)
+                        space_coords = [
+                            (current_x, aisle_top),
+                            (current_x + space_w_deg, aisle_top),
+                            (current_x + space_w_deg - offset, aisle_top - space_l_deg * np.cos(angle_rad)),
+                            (current_x - offset, aisle_top - space_l_deg * np.cos(angle_rad)),
+                            (current_x, aisle_top)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.y > island_top:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_x += space_w_deg
+                        
+                else:
+                    # PERPENDICULAR PARKING on both sides of horizontal island
+                    
+                    # South side (below island) - spaces point up
+                    current_x = bounds[0]
+                    aisle_bottom = island_bottom - aisle_w / lat_to_m
+                    
+                    while current_x < bounds[2]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        space_coords = [
+                            (current_x, aisle_bottom),
+                            (current_x + space_w_deg, aisle_bottom),
+                            (current_x + space_w_deg, aisle_bottom + space_l_deg),
+                            (current_x, aisle_bottom + space_l_deg),
+                            (current_x, aisle_bottom)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.y < island_bottom:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_x += space_w_deg
+                    
+                    # North side (above island) - spaces point down
+                    current_x = bounds[0]
+                    aisle_top = island_top + aisle_w / lat_to_m
+                    
+                    while current_x < bounds[2]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        space_coords = [
+                            (current_x, aisle_top),
+                            (current_x + space_w_deg, aisle_top),
+                            (current_x + space_w_deg, aisle_top - space_l_deg),
+                            (current_x, aisle_top - space_l_deg),
+                            (current_x, aisle_top)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.y > island_top:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_x += space_w_deg
+            
+            else:  # Taller lot - vertical island
+                island_orientation = 'vertical'
+                island_right = center_x + (island_w_deg_lon / 2)
+                island_left = center_x - (island_w_deg_lon / 2)
+                
+                # Draw the island
+                island_coords = [
+                    (island_left, bounds[1]),
+                    (island_right, bounds[1]),
+                    (island_right, bounds[3]),
+                    (island_left, bounds[3]),
+                    (island_left, bounds[1])
+                ]
+                
+                if center_island_angled:
+                    # ANGLED PARKING on both sides of vertical island
+                    angle_rad = np.radians(45)
+                    
+                    # West side (left of island) - spaces point right
+                    current_y = bounds[1]
+                    aisle_left = island_left - aisle_w / lon_to_m
+                    
+                    while current_y < bounds[3]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        offset = space_l_deg * np.sin(angle_rad)
+                        space_coords = [
+                            (aisle_left, current_y),
+                            (aisle_left + space_l_deg * np.cos(angle_rad), current_y),
+                            (aisle_left + space_l_deg * np.cos(angle_rad), current_y + space_w_deg + offset),
+                            (aisle_left, current_y + space_w_deg + offset),
+                            (aisle_left, current_y)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.x < island_left:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_y += space_w_deg
+                    
+                    # East side (right of island) - spaces point left
+                    current_y = bounds[1]
+                    aisle_right = island_right + aisle_w / lon_to_m
+                    
+                    while current_y < bounds[3]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        offset = space_l_deg * np.sin(angle_rad)
+                        space_coords = [
+                            (aisle_right, current_y),
+                            (aisle_right - space_l_deg * np.cos(angle_rad), current_y),
+                            (aisle_right - space_l_deg * np.cos(angle_rad), current_y + space_w_deg - offset),
+                            (aisle_right, current_y + space_w_deg - offset),
+                            (aisle_right, current_y)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.x > island_right:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_y += space_w_deg
+                        
+                else:
+                    # PERPENDICULAR PARKING on both sides of vertical island
+                    
+                    # West side (left of island)
+                    current_y = bounds[1]
+                    aisle_left = island_left - aisle_w / lon_to_m
+                    
+                    while current_y < bounds[3]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        space_coords = [
+                            (aisle_left, current_y),
+                            (aisle_left + space_l_deg, current_y),
+                            (aisle_left + space_l_deg, current_y + space_w_deg),
+                            (aisle_left, current_y + space_w_deg),
+                            (aisle_left, current_y)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.x < island_left:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_y += space_w_deg
+                    
+                    # East side (right of island)
+                    current_y = bounds[1]
+                    aisle_right = island_right + aisle_w / lon_to_m
+                    
+                    while current_y < bounds[3]:
+                        space_w_deg = space_w / lon_to_m
+                        space_l_deg = space_l / lat_to_m
+                        
+                        space_coords = [
+                            (aisle_right, current_y),
+                            (aisle_right - space_l_deg, current_y),
+                            (aisle_right - space_l_deg, current_y + space_w_deg),
+                            (aisle_right, current_y + space_w_deg),
+                            (aisle_right, current_y)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and space_poly.centroid.x > island_right:
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_y += space_w_deg
+            
+            # Add the island as a visual element
+            folium.Polygon(
+                locations=[(lat, lon) for lon, lat in island_coords],
+                color='#228B22',
+                weight=2,
+                fill=True,
+                fillColor='#90EE90',
+                fillOpacity=0.6,
+                popup='Center Island/Median'
+            ).add_to(m)
+
+        # Keep existing row-based, column-based, and parallel layouts
+        elif "Perpendicular" in p_type or "Compact" in p_type:
             # ROW-BASED LAYOUT (Horizontal rows)
             if use_rows:
                 current_y = bounds[1]
