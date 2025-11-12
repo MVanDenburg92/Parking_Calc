@@ -1200,42 +1200,50 @@ with col1:
                         ]
         # Determine orientation
         # Determine which orientation/layout to use
+        # Determine which orientation/layout to use
         if layout_orientation == "Auto (Best Fit)":
             if aspect_ratio > 1.2:
                 use_rows = True
                 use_columns = False
                 use_bay_layout = False
                 use_island_layout = False
+                use_perimeter_center = False
             elif aspect_ratio < 0.8:
                 use_rows = False
                 use_columns = True
                 use_bay_layout = False
                 use_island_layout = False
+                use_perimeter_center = False
             else:
                 use_rows = True
                 use_columns = False
                 use_bay_layout = False
                 use_island_layout = False
+                use_perimeter_center = False
         elif layout_orientation == "Row-Based (Horizontal)":
             use_rows = True
             use_columns = False
             use_bay_layout = False
             use_island_layout = False
+            use_perimeter_center = False
         elif layout_orientation == "Column-Based (Vertical)":
             use_rows = False
             use_columns = True
             use_bay_layout = False
             use_island_layout = False
+            use_perimeter_center = False
         elif layout_orientation == "Bay Layout (Multiple Sections)":
             use_rows = False
             use_columns = False
             use_bay_layout = True
             use_island_layout = False
+            use_perimeter_center = False
         elif layout_orientation == "Island Layout (Scattered Medians)":
             use_rows = False
             use_columns = False
             use_bay_layout = False
             use_island_layout = True
+            use_perimeter_center = False
         elif layout_orientation == "Perimeter + Center (High Efficiency)":
             use_rows = False
             use_columns = False
@@ -1247,6 +1255,7 @@ with col1:
             use_columns = False
             use_bay_layout = False
             use_island_layout = False
+            use_perimeter_center = False
 
         # After the orientation determination logic, add:
 
@@ -1443,7 +1452,7 @@ with col1:
                     
                     current_x += space_w_deg
         
-        if use_bay_layout:
+        elif use_bay_layout:
             bay_height = (bounds[3] - bounds[1]) / num_bays
             aisle_w_deg = aisle_w / lat_to_m
             
@@ -1541,7 +1550,7 @@ with col1:
                         
                         current_x += space_w_deg
         # ISLAND LAYOUT - Scattered landscaped islands like Image 1
-        elif layout_orientation == "Island Layout (Scattered Medians)":
+        elif use_island_layout:
             # First, place the islands strategically
             island_w_deg_lon = island_width / lon_to_m
             island_l_deg_lat = island_length / lat_to_m
