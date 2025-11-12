@@ -285,8 +285,8 @@ layout_orientation = st.sidebar.selectbox(
         "Auto (Best Fit)", 
         "Row-Based (Horizontal)", 
         "Column-Based (Vertical)",
-        "Bay Layout (Multiple Sections)",
-        "Island Layout (Scattered Medians)",
+        # "Bay Layout (Multiple Sections)",
+        # "Island Layout (Scattered Medians)",
         "Perimeter + Center (High Efficiency)"  # NEW OPTION
     ],
     help="Choose parking layout style"
@@ -327,65 +327,65 @@ if layout_orientation == "Perimeter + Center (High Efficiency)":
         value=1,
         help="Number of double-loaded parking rows in center"
     )
-# Bay and Island configuration
-if layout_orientation == "Bay Layout (Multiple Sections)":
-    st.sidebar.markdown("### Bay Configuration")
-    num_bays = st.sidebar.slider(
-        "Number of Parking Bays",
-        min_value=2,
-        max_value=6,
-        value=3,
-        help="Divides lot into separate parking sections"
-    )
-    bay_orientation = st.sidebar.radio(
-        "Bay Style",
-        ["Perpendicular (90°)", "Angled (45-60°)"],
-        help="Parking angle within each bay"
-    )
+# # Bay and Island configuration
+# if layout_orientation == "Bay Layout (Multiple Sections)":
+#     st.sidebar.markdown("### Bay Configuration")
+#     num_bays = st.sidebar.slider(
+#         "Number of Parking Bays",
+#         min_value=2,
+#         max_value=6,
+#         value=3,
+#         help="Divides lot into separate parking sections"
+#     )
+#     bay_orientation = st.sidebar.radio(
+#         "Bay Style",
+#         ["Perpendicular (90°)", "Angled (45-60°)"],
+#         help="Parking angle within each bay"
+#     )
 
-elif layout_orientation == "Island Layout (Scattered Medians)":
-    st.sidebar.markdown("### Island Configuration")
+# elif layout_orientation == "Island Layout (Scattered Medians)":
+#     st.sidebar.markdown("### Island Configuration")
     
-    if unit_system == "Imperial":
-        island_width_display = st.sidebar.number_input(
-            f"Island Width ({length_unit})",
-            min_value=8.0,
-            max_value=40.0,
-            value=20.0,
-            step=2.0
-        )
-        island_length_display = st.sidebar.number_input(
-            f"Island Length ({length_unit})",
-            min_value=15.0,
-            max_value=60.0,
-            value=40.0,
-            step=5.0
-        )
-        island_width = island_width_display / length_conversion
-        island_length = island_length_display / length_conversion
-    else:
-        island_width = st.sidebar.number_input(
-            f"Island Width ({length_unit})",
-            min_value=2.5,
-            max_value=12.0,
-            value=6.0,
-            step=0.5
-        )
-        island_length = st.sidebar.number_input(
-            f"Island Length ({length_unit})",
-            min_value=4.5,
-            max_value=18.0,
-            value=12.0,
-            step=1.0
-        )
+#     if unit_system == "Imperial":
+#         island_width_display = st.sidebar.number_input(
+#             f"Island Width ({length_unit})",
+#             min_value=8.0,
+#             max_value=40.0,
+#             value=20.0,
+#             step=2.0
+#         )
+#         island_length_display = st.sidebar.number_input(
+#             f"Island Length ({length_unit})",
+#             min_value=15.0,
+#             max_value=60.0,
+#             value=40.0,
+#             step=5.0
+#         )
+#         island_width = island_width_display / length_conversion
+#         island_length = island_length_display / length_conversion
+#     else:
+#         island_width = st.sidebar.number_input(
+#             f"Island Width ({length_unit})",
+#             min_value=2.5,
+#             max_value=12.0,
+#             value=6.0,
+#             step=0.5
+#         )
+#         island_length = st.sidebar.number_input(
+#             f"Island Length ({length_unit})",
+#             min_value=4.5,
+#             max_value=18.0,
+#             value=12.0,
+#             step=1.0
+#         )
     
-    islands_per_row = st.sidebar.slider(
-        "Islands per Row",
-        min_value=1,
-        max_value=4,
-        value=2,
-        help="Number of landscaped islands across the width"
-    )
+#     islands_per_row = st.sidebar.slider(
+#         "Islands per Row",
+#         min_value=1,
+#         max_value=4,
+#         value=2,
+#         help="Number of landscaped islands across the width"
+#     )
 
 # Structure type selection
 structure_type = st.sidebar.selectbox(
@@ -1500,181 +1500,181 @@ with col1:
                     st.warning(f"⚠️ Not enough space for {center_aisle_count} center rows. Try reducing the number or using a larger lot.")
                 else:
                     add_app_log("Lot too small for center rows - perimeter only", "WARNING")
-        elif use_bay_layout:
-            bay_height = (bounds[3] - bounds[1]) / num_bays
-            aisle_w_deg = aisle_w / lat_to_m
+        # elif use_bay_layout:
+        #     bay_height = (bounds[3] - bounds[1]) / num_bays
+        #     aisle_w_deg = aisle_w / lat_to_m
             
-            for bay_num in range(num_bays):
-                bay_bottom = bounds[1] + (bay_num * bay_height)
-                bay_top = bay_bottom + bay_height
+        #     for bay_num in range(num_bays):
+        #         bay_bottom = bounds[1] + (bay_num * bay_height)
+        #         bay_top = bay_bottom + bay_height
                 
-                if bay_orientation == "Angled (45-60°)":
-                    angle_rad = np.radians(60)
+        #         if bay_orientation == "Angled (45-60°)":
+        #             angle_rad = np.radians(60)
                     
-                    # Determine angle direction - alternates for each bay
-                    if bay_num % 2 == 0:
-                        # Even bays (0, 2, 4...): angle upward-right
-                        angle_up = True
-                        # Aisle at bottom, spaces fill upward
-                        spaces_start_y = bay_bottom + aisle_w_deg
-                        spaces_end_y = bay_top
-                    else:
-                        # Odd bays (1, 3, 5...): angle downward-right
-                        angle_up = False
-                        # Aisle at top, spaces fill downward
-                        spaces_start_y = bay_bottom
-                        spaces_end_y = bay_top - aisle_w_deg
+        #             # Determine angle direction - alternates for each bay
+        #             if bay_num % 2 == 0:
+        #                 # Even bays (0, 2, 4...): angle upward-right
+        #                 angle_up = True
+        #                 # Aisle at bottom, spaces fill upward
+        #                 spaces_start_y = bay_bottom + aisle_w_deg
+        #                 spaces_end_y = bay_top
+        #             else:
+        #                 # Odd bays (1, 3, 5...): angle downward-right
+        #                 angle_up = False
+        #                 # Aisle at top, spaces fill downward
+        #                 spaces_start_y = bay_bottom
+        #                 spaces_end_y = bay_top - aisle_w_deg
                     
-                    current_x = bounds[0]
+        #             current_x = bounds[0]
                     
-                    while current_x < bounds[2]:
-                        space_w_deg = space_w / lon_to_m
-                        space_l_deg = space_l / lat_to_m
+        #             while current_x < bounds[2]:
+        #                 space_w_deg = space_w / lon_to_m
+        #                 space_l_deg = space_l / lat_to_m
                         
-                        offset_x = space_l_deg * np.sin(angle_rad)
-                        offset_y = space_l_deg * np.cos(angle_rad)
+        #                 offset_x = space_l_deg * np.sin(angle_rad)
+        #                 offset_y = space_l_deg * np.cos(angle_rad)
                         
-                        if angle_up:
-                            # Spaces angling upward-right
-                            space_coords = [
-                                (current_x, spaces_start_y),
-                                (current_x + space_w_deg, spaces_start_y),
-                                (current_x + space_w_deg + offset_x, spaces_start_y + offset_y),
-                                (current_x + offset_x, spaces_start_y + offset_y),
-                                (current_x, spaces_start_y)
-                            ]
-                        else:
-                            # Spaces angling downward-right
-                            space_coords = [
-                                (current_x + offset_x, spaces_start_y),
-                                (current_x + space_w_deg + offset_x, spaces_start_y),
-                                (current_x + space_w_deg, spaces_end_y),
-                                (current_x, spaces_end_y),
-                                (current_x + offset_x, spaces_start_y)
-                            ]
+        #                 if angle_up:
+        #                     # Spaces angling upward-right
+        #                     space_coords = [
+        #                         (current_x, spaces_start_y),
+        #                         (current_x + space_w_deg, spaces_start_y),
+        #                         (current_x + space_w_deg + offset_x, spaces_start_y + offset_y),
+        #                         (current_x + offset_x, spaces_start_y + offset_y),
+        #                         (current_x, spaces_start_y)
+        #                     ]
+        #                 else:
+        #                     # Spaces angling downward-right
+        #                     space_coords = [
+        #                         (current_x + offset_x, spaces_start_y),
+        #                         (current_x + space_w_deg + offset_x, spaces_start_y),
+        #                         (current_x + space_w_deg, spaces_end_y),
+        #                         (current_x, spaces_end_y),
+        #                         (current_x + offset_x, spaces_start_y)
+        #                     ]
                         
-                        space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid):
-                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
-                            parking_spaces.append(display_coords)
+        #                 space_poly = Polygon(space_coords)
+        #                 if poly_latlon.contains(space_poly.centroid):
+        #                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
+        #                     parking_spaces.append(display_coords)
                         
-                        current_x += space_w_deg
+        #                 current_x += space_w_deg
                 
-                else:  # Perpendicular parking
-                    if bay_num % 2 == 0:
-                        aisle_y = bay_bottom + aisle_w_deg
-                        point_up = True
-                    else:
-                        aisle_y = bay_top - aisle_w_deg
-                        point_up = False
+        #         else:  # Perpendicular parking
+        #             if bay_num % 2 == 0:
+        #                 aisle_y = bay_bottom + aisle_w_deg
+        #                 point_up = True
+        #             else:
+        #                 aisle_y = bay_top - aisle_w_deg
+        #                 point_up = False
                     
-                    current_x = bounds[0]
+        #             current_x = bounds[0]
                     
-                    while current_x < bounds[2]:
-                        space_w_deg = space_w / lon_to_m
-                        space_l_deg = space_l / lat_to_m
+        #             while current_x < bounds[2]:
+        #                 space_w_deg = space_w / lon_to_m
+        #                 space_l_deg = space_l / lat_to_m
                         
-                        if point_up:
-                            space_coords = [
-                                (current_x, aisle_y),
-                                (current_x + space_w_deg, aisle_y),
-                                (current_x + space_w_deg, aisle_y + space_l_deg),
-                                (current_x, aisle_y + space_l_deg),
-                                (current_x, aisle_y)
-                            ]
-                        else:
-                            space_coords = [
-                                (current_x, aisle_y - space_l_deg),
-                                (current_x + space_w_deg, aisle_y - space_l_deg),
-                                (current_x + space_w_deg, aisle_y),
-                                (current_x, aisle_y),
-                                (current_x, aisle_y - space_l_deg)
-                            ]
+        #                 if point_up:
+        #                     space_coords = [
+        #                         (current_x, aisle_y),
+        #                         (current_x + space_w_deg, aisle_y),
+        #                         (current_x + space_w_deg, aisle_y + space_l_deg),
+        #                         (current_x, aisle_y + space_l_deg),
+        #                         (current_x, aisle_y)
+        #                     ]
+        #                 else:
+        #                     space_coords = [
+        #                         (current_x, aisle_y - space_l_deg),
+        #                         (current_x + space_w_deg, aisle_y - space_l_deg),
+        #                         (current_x + space_w_deg, aisle_y),
+        #                         (current_x, aisle_y),
+        #                         (current_x, aisle_y - space_l_deg)
+        #                     ]
                         
-                        space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid):
-                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
-                            parking_spaces.append(display_coords)
+        #                 space_poly = Polygon(space_coords)
+        #                 if poly_latlon.contains(space_poly.centroid):
+        #                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
+        #                     parking_spaces.append(display_coords)
                         
-                        current_x += space_w_deg
-        # ISLAND LAYOUT - Scattered landscaped islands like Image 1
-        elif use_island_layout:
-            # First, place the islands strategically
-            island_w_deg_lon = island_width / lon_to_m
-            island_l_deg_lat = island_length / lat_to_m
+        #                 current_x += space_w_deg
+        # # ISLAND LAYOUT - Scattered landscaped islands like Image 1
+        # elif use_island_layout:
+        #     # First, place the islands strategically
+        #     island_w_deg_lon = island_width / lon_to_m
+        #     island_l_deg_lat = island_length / lat_to_m
             
-            lot_width = bounds[2] - bounds[0]
-            lot_height = bounds[3] - bounds[1]
+        #     lot_width = bounds[2] - bounds[0]
+        #     lot_height = bounds[3] - bounds[1]
             
-            # Calculate spacing for islands
-            num_rows_islands = max(1, int(lot_height / (island_l_deg_lat * 3)))
+        #     # Calculate spacing for islands
+        #     num_rows_islands = max(1, int(lot_height / (island_l_deg_lat * 3)))
             
-            islands = []
+        #     islands = []
             
-            for row in range(num_rows_islands):
-                row_y = bounds[1] + (lot_height / (num_rows_islands + 1)) * (row + 1)
+        #     for row in range(num_rows_islands):
+        #         row_y = bounds[1] + (lot_height / (num_rows_islands + 1)) * (row + 1)
                 
-                for col in range(islands_per_row):
-                    col_x = bounds[0] + (lot_width / (islands_per_row + 1)) * (col + 1)
+        #         for col in range(islands_per_row):
+        #             col_x = bounds[0] + (lot_width / (islands_per_row + 1)) * (col + 1)
                     
-                    # Create island rectangle
-                    island_coords = [
-                        (col_x - island_w_deg_lon/2, row_y - island_l_deg_lat/2),
-                        (col_x + island_w_deg_lon/2, row_y - island_l_deg_lat/2),
-                        (col_x + island_w_deg_lon/2, row_y + island_l_deg_lat/2),
-                        (col_x - island_w_deg_lon/2, row_y + island_l_deg_lat/2),
-                        (col_x - island_w_deg_lon/2, row_y - island_l_deg_lat/2)
-                    ]
+        #             # Create island rectangle
+        #             island_coords = [
+        #                 (col_x - island_w_deg_lon/2, row_y - island_l_deg_lat/2),
+        #                 (col_x + island_w_deg_lon/2, row_y - island_l_deg_lat/2),
+        #                 (col_x + island_w_deg_lon/2, row_y + island_l_deg_lat/2),
+        #                 (col_x - island_w_deg_lon/2, row_y + island_l_deg_lat/2),
+        #                 (col_x - island_w_deg_lon/2, row_y - island_l_deg_lat/2)
+        #             ]
                     
-                    islands.append(Polygon(island_coords))
+        #             islands.append(Polygon(island_coords))
                     
-                    # Draw island on map
-                    folium.Polygon(
-                        locations=[(lat, lon) for lon, lat in island_coords],
-                        color='#2d5016',
-                        weight=2,
-                        fill=True,
-                        fillColor='#4a7c28',
-                        fillOpacity=0.7,
-                        popup='Landscaped Island'
-                    ).add_to(m)
+        #             # Draw island on map
+        #             folium.Polygon(
+        #                 locations=[(lat, lon) for lon, lat in island_coords],
+        #                 color='#2d5016',
+        #                 weight=2,
+        #                 fill=True,
+        #                 fillColor='#4a7c28',
+        #                 fillOpacity=0.7,
+        #                 popup='Landscaped Island'
+        #             ).add_to(m)
             
-            # Now place parking spaces around the islands
-            current_y = bounds[1]
-            row_num = 0
+        #     # Now place parking spaces around the islands
+        #     current_y = bounds[1]
+        #     row_num = 0
             
-            while current_y < bounds[3]:
-                current_x = bounds[0]
-                space_direction = 1 if row_num % 2 == 0 else -1
+        #     while current_y < bounds[3]:
+        #         current_x = bounds[0]
+        #         space_direction = 1 if row_num % 2 == 0 else -1
                 
-                while current_x < bounds[2]:
-                    space_w_deg = space_w / lon_to_m
-                    space_l_deg = space_l / lat_to_m
+        #         while current_x < bounds[2]:
+        #             space_w_deg = space_w / lon_to_m
+        #             space_l_deg = space_l / lat_to_m
                     
-                    space_coords = create_space_coords(
-                        current_x, current_y, space_w_deg, space_l_deg,
-                        orientation='horizontal', direction=space_direction
-                    )
+        #             space_coords = create_space_coords(
+        #                 current_x, current_y, space_w_deg, space_l_deg,
+        #                 orientation='horizontal', direction=space_direction
+        #             )
                     
-                    space_poly = Polygon(space_coords)
+        #             space_poly = Polygon(space_coords)
                     
-                    # Check if space conflicts with any island
-                    conflicts_with_island = False
-                    for island in islands:
-                        if space_poly.intersects(island) or island.contains(space_poly.centroid):
-                            conflicts_with_island = True
-                            break
+        #             # Check if space conflicts with any island
+        #             conflicts_with_island = False
+        #             for island in islands:
+        #                 if space_poly.intersects(island) or island.contains(space_poly.centroid):
+        #                     conflicts_with_island = True
+        #                     break
                     
-                    # Only add if within polygon AND doesn't conflict with islands
-                    if poly_latlon.contains(space_poly.centroid) and not conflicts_with_island:
-                        display_coords = [[(lon, lat) for lon, lat in space_coords]]
-                        parking_spaces.append(display_coords)
+        #             # Only add if within polygon AND doesn't conflict with islands
+        #             if poly_latlon.contains(space_poly.centroid) and not conflicts_with_island:
+        #                 display_coords = [[(lon, lat) for lon, lat in space_coords]]
+        #                 parking_spaces.append(display_coords)
                     
-                    current_x += space_w_deg
+        #             current_x += space_w_deg
                 
-                aisle_w_deg = aisle_w / lat_to_m
-                current_y += (space_l_deg if space_direction == 1 else 0) + aisle_w_deg
-                row_num += 1
+        #         aisle_w_deg = aisle_w / lat_to_m
+        #         current_y += (space_l_deg if space_direction == 1 else 0) + aisle_w_deg
+        #         row_num += 1
         # Keep existing row-based, column-based, and parallel layouts
         elif "Perpendicular" in p_type or "Compact" in p_type:
             # ROW-BASED LAYOUT (Horizontal rows)
