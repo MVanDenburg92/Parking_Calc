@@ -1357,7 +1357,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1377,7 +1377,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1397,7 +1397,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1417,7 +1417,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1454,7 +1454,7 @@ with col1:
                         ]
                         
                         space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
                             display_coords = [[(lon, lat) for lon, lat in space_coords]]
                             parking_spaces.append(display_coords)
                         
@@ -1474,7 +1474,7 @@ with col1:
                         ]
                         
                         space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
                             display_coords = [[(lon, lat) for lon, lat in space_coords]]
                             parking_spaces.append(display_coords)
                         
