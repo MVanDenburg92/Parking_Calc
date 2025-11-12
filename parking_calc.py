@@ -1114,10 +1114,10 @@ with col1:
         elif layout_orientation == "Column-Based (Vertical)":
             use_rows = False
             use_columns = True
-        else:  # Mixed - NOT RECOMMENDED, will show warning
-            use_rows = True
-            use_columns = True
-            st.warning("⚠️ Mixed mode will create overlapping spaces - use for visual comparison only!")
+        # else:  # Mixed - NOT RECOMMENDED, will show warning
+        #     use_rows = True
+        #     use_columns = True
+        #     st.warning("⚠️ Mixed mode will create overlapping spaces - use for visual comparison only!")
 
         def create_space_coords(x, y, width_deg, length_deg, orientation='horizontal', direction=1, angle_rad=0):
             """
