@@ -1208,22 +1208,35 @@ with col1:
 
         # After the orientation determination logic, add:
 
-        # BAY LAYOUT - Divides lot into multiple parking sections
-        if layout_orientation == "Bay Layout (Multiple Sections)":
-            # Divide the lot into bays (horizontal sections)
+        # BAY LAYOUT - Divides lot into multiple parking sections (CORRECTED v2)
+        # BAY LAYOUT - Matches the submitted image exactly
+        # BAY LAYOUT - Matches the submitted image exactly
+        if use_bay_layout:
             bay_height = (bounds[3] - bounds[1]) / num_bays
+            aisle_w_deg = aisle_w / lat_to_m
             
             for bay_num in range(num_bays):
                 bay_bottom = bounds[1] + (bay_num * bay_height)
                 bay_top = bay_bottom + bay_height
                 
                 if bay_orientation == "Angled (45-60°)":
-                    # Angled parking within this bay
-                    angle_rad = np.radians(60)  # 60-degree angle
+                    angle_rad = np.radians(60)
                     
-                    # Left side - spaces angling right
+                    # Determine angle direction - alternates for each bay
+                    if bay_num % 2 == 0:
+                        # Even bays (0, 2, 4...): angle upward-right
+                        angle_up = True
+                        # Aisle at bottom, spaces fill upward
+                        spaces_start_y = bay_bottom + aisle_w_deg
+                        spaces_end_y = bay_top
+                    else:
+                        # Odd bays (1, 3, 5...): angle downward-right
+                        angle_up = False
+                        # Aisle at top, spaces fill downward
+                        spaces_start_y = bay_bottom
+                        spaces_end_y = bay_top - aisle_w_deg
+                    
                     current_x = bounds[0]
-                    row_y = bay_bottom + (aisle_w / lat_to_m)
                     
                     while current_x < bounds[2]:
                         space_w_deg = space_w / lon_to_m
@@ -1232,98 +1245,69 @@ with col1:
                         offset_x = space_l_deg * np.sin(angle_rad)
                         offset_y = space_l_deg * np.cos(angle_rad)
                         
-                        space_coords = [
-                            (current_x, row_y),
-                            (current_x + space_w_deg, row_y),
-                            (current_x + space_w_deg + offset_x, row_y + offset_y),
-                            (current_x + offset_x, row_y + offset_y),
-                            (current_x, row_y)
-                        ]
+                        if angle_up:
+                            # Spaces angling upward-right
+                            space_coords = [
+                                (current_x, spaces_start_y),
+                                (current_x + space_w_deg, spaces_start_y),
+                                (current_x + space_w_deg + offset_x, spaces_start_y + offset_y),
+                                (current_x + offset_x, spaces_start_y + offset_y),
+                                (current_x, spaces_start_y)
+                            ]
+                        else:
+                            # Spaces angling downward-right
+                            space_coords = [
+                                (current_x + offset_x, spaces_start_y),
+                                (current_x + space_w_deg + offset_x, spaces_start_y),
+                                (current_x + space_w_deg, spaces_end_y),
+                                (current_x, spaces_end_y),
+                                (current_x + offset_x, spaces_start_y)
+                            ]
                         
                         space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and bay_bottom < space_poly.centroid.y < bay_top:
-                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
-                            parking_spaces.append(display_coords)
-                        
-                        current_x += space_w_deg
-                    
-                    # Right side - spaces angling left (mirror)
-                    current_x = bounds[0]
-                    row_y = bay_top - (aisle_w / lat_to_m)
-                    
-                    while current_x < bounds[2]:
-                        space_w_deg = space_w / lon_to_m
-                        space_l_deg = space_l / lat_to_m
-                        
-                        offset_x = space_l_deg * np.sin(angle_rad)
-                        offset_y = space_l_deg * np.cos(angle_rad)
-                        
-                        space_coords = [
-                            (current_x, row_y),
-                            (current_x + space_w_deg, row_y),
-                            (current_x + space_w_deg + offset_x, row_y - offset_y),
-                            (current_x + offset_x, row_y - offset_y),
-                            (current_x, row_y)
-                        ]
-                        
-                        space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and bay_bottom < space_poly.centroid.y < bay_top:
+                        if poly_latlon.contains(space_poly.centroid):
                             display_coords = [[(lon, lat) for lon, lat in space_coords]]
                             parking_spaces.append(display_coords)
                         
                         current_x += space_w_deg
                 
-                else:  # Perpendicular within bay
-                    # Double-loaded within each bay
-                    mid_y = bay_bottom + (bay_height / 2)
-                    aisle_w_deg = aisle_w / lat_to_m
+                else:  # Perpendicular parking
+                    if bay_num % 2 == 0:
+                        aisle_y = bay_bottom + aisle_w_deg
+                        point_up = True
+                    else:
+                        aisle_y = bay_top - aisle_w_deg
+                        point_up = False
                     
-                    # Bottom row (pointing up)
                     current_x = bounds[0]
-                    row_y = mid_y - aisle_w_deg
                     
                     while current_x < bounds[2]:
                         space_w_deg = space_w / lon_to_m
                         space_l_deg = space_l / lat_to_m
                         
-                        space_coords = [
-                            (current_x, row_y),
-                            (current_x + space_w_deg, row_y),
-                            (current_x + space_w_deg, row_y + space_l_deg),
-                            (current_x, row_y + space_l_deg),
-                            (current_x, row_y)
-                        ]
+                        if point_up:
+                            space_coords = [
+                                (current_x, aisle_y),
+                                (current_x + space_w_deg, aisle_y),
+                                (current_x + space_w_deg, aisle_y + space_l_deg),
+                                (current_x, aisle_y + space_l_deg),
+                                (current_x, aisle_y)
+                            ]
+                        else:
+                            space_coords = [
+                                (current_x, aisle_y - space_l_deg),
+                                (current_x + space_w_deg, aisle_y - space_l_deg),
+                                (current_x + space_w_deg, aisle_y),
+                                (current_x, aisle_y),
+                                (current_x, aisle_y - space_l_deg)
+                            ]
                         
                         space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and bay_bottom < space_poly.centroid.y < bay_top:
+                        if poly_latlon.contains(space_poly.centroid):
                             display_coords = [[(lon, lat) for lon, lat in space_coords]]
                             parking_spaces.append(display_coords)
                         
                         current_x += space_w_deg
-                    
-                    # Top row (pointing down)
-                    current_x = bounds[0]
-                    row_y = mid_y + aisle_w_deg
-                    
-                    while current_x < bounds[2]:
-                        space_w_deg = space_w / lon_to_m
-                        space_l_deg = space_l / lat_to_m
-                        
-                        space_coords = [
-                            (current_x, row_y),
-                            (current_x + space_w_deg, row_y),
-                            (current_x + space_w_deg, row_y - space_l_deg),
-                            (current_x, row_y - space_l_deg),
-                            (current_x, row_y)
-                        ]
-                        
-                        space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and bay_bottom < space_poly.centroid.y < bay_top:
-                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
-                            parking_spaces.append(display_coords)
-                        
-                        current_x += space_w_deg
-
         # ISLAND LAYOUT - Scattered landscaped islands like Image 1
         elif layout_orientation == "Island Layout (Scattered Medians)":
             # First, place the islands strategically
