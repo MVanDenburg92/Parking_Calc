@@ -1427,19 +1427,33 @@ with col1:
             # Only create center rows if there's enough space
             center_height = center_bounds['top'] - center_bounds['bottom']
             center_width = center_bounds['right'] - center_bounds['left']
-            
-            if center_height > (space_l_deg * 2 + aisle_w_deg) and center_width > space_w_deg:
+
+            # Calculate space required for each row
+            # Each row needs: parking spaces on both sides + aisle in middle
+            row_height = (2 * space_l_deg) + aisle_w_deg
+
+            # Calculate space required for all rows with proper spacing between them
+            total_height_needed = (center_aisle_count * row_height) + ((center_aisle_count - 1) * aisle_w_deg)
+
+            if center_height > total_height_needed and center_width > space_w_deg:
+                # Calculate starting position to center all rows vertically
                 center_y = (center_bounds['bottom'] + center_bounds['top']) / 2
                 
-                for row in range(center_aisle_count):
-                    # Calculate vertical position for this center row
-                    if center_aisle_count == 1:
-                        row_center_y = center_y
-                    else:
-                        # Distribute multiple rows evenly
-                        spacing = center_height * 0.6 / center_aisle_count
-                        row_center_y = center_y + (row - center_aisle_count/2) * spacing
+                # Calculate spacing between row centers
+                if center_aisle_count == 1:
+                    row_positions = [center_y]
+                else:
+                    # Space between row centers = height of one row + one circulation aisle
+                    row_spacing = row_height + aisle_w_deg
                     
+                    # Calculate positions to center the group of rows
+                    total_group_height = (center_aisle_count - 1) * row_spacing
+                    first_row_y = center_y - (total_group_height / 2)
+                    
+                    row_positions = [first_row_y + (i * row_spacing) for i in range(center_aisle_count)]
+                
+                # Generate parking spaces for each row
+                for row_idx, row_center_y in enumerate(row_positions):
                     # Spaces on top of aisle (facing down)
                     current_x = center_bounds['left']
                     aisle_top_y = row_center_y + (aisle_w_deg / 2)
@@ -1481,8 +1495,11 @@ with col1:
                         current_x += space_w_deg
             else:
                 # Not enough space for center rows
-                add_app_log("Lot too small for center rows - perimeter only", "WARNING")
-        
+                if center_aisle_count > 1:
+                    add_app_log(f"Lot too small for {center_aisle_count} center rows - showing fewer or perimeter only", "WARNING")
+                    st.warning(f"⚠️ Not enough space for {center_aisle_count} center rows. Try reducing the number or using a larger lot.")
+                else:
+                    add_app_log("Lot too small for center rows - perimeter only", "WARNING")
         elif use_bay_layout:
             bay_height = (bounds[3] - bounds[1]) / num_bays
             aisle_w_deg = aisle_w / lat_to_m
