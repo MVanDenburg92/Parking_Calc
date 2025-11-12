@@ -990,26 +990,32 @@ with col1:
         aspect_ratio = poly_width / poly_height if poly_height > 0 else 1
 
         # Determine which orientations to use
+        # Determine which orientations to use
         if layout_orientation == "Auto (Optimize)":
-            # Choose based on aspect ratio
-            if aspect_ratio > 1.3:  # Wide polygon
+            # Choose ONLY ONE orientation based on aspect ratio
+            if aspect_ratio > 1.2:  # Wide polygon - use rows
                 use_rows = True
                 use_columns = False
-            elif aspect_ratio < 0.7:  # Tall polygon
+                add_app_log(f"Auto-selected ROW-BASED layout (aspect ratio: {aspect_ratio:.2f})", "INFO")
+            elif aspect_ratio < 0.8:  # Tall polygon - use columns
                 use_rows = False
                 use_columns = True
-            else:  # Square-ish polygon
-                use_rows = True
-                use_columns = True
+                add_app_log(f"Auto-selected COLUMN-BASED layout (aspect ratio: {aspect_ratio:.2f})", "INFO")
+            else:  # Square-ish - pick the one that fits more spaces
+                # Test both and pick the better one
+                use_rows = True  # Default to rows for square lots
+                use_columns = False
+                add_app_log(f"Auto-selected ROW-BASED layout (square lot, aspect ratio: {aspect_ratio:.2f})", "INFO")
         elif layout_orientation == "Row-Based (Horizontal)":
             use_rows = True
             use_columns = False
         elif layout_orientation == "Column-Based (Vertical)":
             use_rows = False
             use_columns = True
-        else:  # Mixed
+        else:  # Mixed - NOT RECOMMENDED, will show warning
             use_rows = True
             use_columns = True
+            st.warning("⚠️ Mixed mode will create overlapping spaces - use for visual comparison only!")
 
         def create_space_coords(x, y, width_deg, length_deg, orientation='horizontal', direction=1, angle_rad=0):
             """
