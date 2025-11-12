@@ -1263,10 +1263,12 @@ with col1:
         # BAY LAYOUT - Matches the submitted image exactly
         # BAY LAYOUT - Matches the submitted image exactly
         # PERIMETER + CENTER LAYOUT - High efficiency like the submitted image
+        # PERIMETER + CENTER LAYOUT - High efficiency with proper circulation
         if use_perimeter_center:
             space_w_deg = space_w / lon_to_m
             space_l_deg = space_l / lat_to_m
             aisle_w_deg = aisle_w / lat_to_m
+            aisle_w_deg_lon = aisle_w / lon_to_m
             
             corner_islands = []
             
@@ -1320,6 +1322,18 @@ with col1:
                         return True
                 return False
             
+            # Calculate the boundaries for center section (leaving circulation aisles)
+            # Perimeter spaces + their aisle + circulation aisle
+            circulation_clearance_lat = space_l_deg + (aisle_w_deg * 2)  # Space depth + aisle + circulation
+            circulation_clearance_lon = space_l_deg + (aisle_w_deg_lon * 2)
+            
+            center_bounds = {
+                'left': bounds[0] + circulation_clearance_lon,
+                'right': bounds[2] - circulation_clearance_lon,
+                'bottom': bounds[1] + circulation_clearance_lat,
+                'top': bounds[3] - circulation_clearance_lat
+            }
+            
             # 1. TOP PERIMETER - Spaces facing down (into lot)
             current_x = bounds[0]
             perimeter_y = bounds[3] - space_l_deg - aisle_w_deg
@@ -1362,7 +1376,7 @@ with col1:
             
             # 3. LEFT PERIMETER - Spaces facing right (into lot)
             current_y = bounds[1]
-            perimeter_x = bounds[0] + aisle_w_deg / lon_to_m
+            perimeter_x = bounds[0] + aisle_w_deg_lon
             
             while current_y < bounds[3]:
                 space_coords = [
@@ -1382,7 +1396,7 @@ with col1:
             
             # 4. RIGHT PERIMETER - Spaces facing left (into lot)
             current_y = bounds[1]
-            perimeter_x = bounds[2] - space_l_deg - (aisle_w_deg / lon_to_m)
+            perimeter_x = bounds[2] - space_l_deg - aisle_w_deg_lon
             
             while current_y < bounds[3]:
                 space_coords = [
@@ -1400,57 +1414,65 @@ with col1:
                 
                 current_y += space_w_deg
             
-            # 5. CENTER DOUBLE-LOADED ROWS
-            center_y = (bounds[1] + bounds[3]) / 2
+            # 5. CENTER DOUBLE-LOADED ROWS (with proper clearance from perimeter)
+            # Only create center rows if there's enough space
+            center_height = center_bounds['top'] - center_bounds['bottom']
+            center_width = center_bounds['right'] - center_bounds['left']
             
-            for row in range(center_aisle_count):
-                # Calculate vertical position for this center row
-                if center_aisle_count == 1:
-                    row_center_y = center_y
-                else:
-                    # Distribute multiple rows evenly
-                    spacing = (bounds[3] - bounds[1]) * 0.4 / center_aisle_count
-                    row_center_y = center_y + (row - center_aisle_count/2) * spacing
+            if center_height > (space_l_deg * 2 + aisle_w_deg) and center_width > space_w_deg:
+                center_y = (center_bounds['bottom'] + center_bounds['top']) / 2
                 
-                # Spaces on top of aisle (facing down)
-                current_x = bounds[0] + space_l_deg + aisle_w_deg / lon_to_m
-                aisle_top_y = row_center_y + (aisle_w_deg / 2)
-                
-                while current_x < bounds[2] - space_l_deg - aisle_w_deg / lon_to_m:
-                    space_coords = [
-                        (current_x, aisle_top_y + space_l_deg),
-                        (current_x + space_w_deg, aisle_top_y + space_l_deg),
-                        (current_x + space_w_deg, aisle_top_y),
-                        (current_x, aisle_top_y),
-                        (current_x, aisle_top_y + space_l_deg)
-                    ]
+                for row in range(center_aisle_count):
+                    # Calculate vertical position for this center row
+                    if center_aisle_count == 1:
+                        row_center_y = center_y
+                    else:
+                        # Distribute multiple rows evenly
+                        spacing = center_height * 0.6 / center_aisle_count
+                        row_center_y = center_y + (row - center_aisle_count/2) * spacing
                     
-                    space_poly = Polygon(space_coords)
-                    if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
-                        display_coords = [[(lon, lat) for lon, lat in space_coords]]
-                        parking_spaces.append(display_coords)
+                    # Spaces on top of aisle (facing down)
+                    current_x = center_bounds['left']
+                    aisle_top_y = row_center_y + (aisle_w_deg / 2)
                     
-                    current_x += space_w_deg
-                
-                # Spaces on bottom of aisle (facing up)
-                current_x = bounds[0] + space_l_deg + aisle_w_deg / lon_to_m
-                aisle_bottom_y = row_center_y - (aisle_w_deg / 2)
-                
-                while current_x < bounds[2] - space_l_deg - aisle_w_deg / lon_to_m:
-                    space_coords = [
-                        (current_x, aisle_bottom_y),
-                        (current_x + space_w_deg, aisle_bottom_y),
-                        (current_x + space_w_deg, aisle_bottom_y - space_l_deg),
-                        (current_x, aisle_bottom_y - space_l_deg),
-                        (current_x, aisle_bottom_y)
-                    ]
+                    while current_x < center_bounds['right']:
+                        space_coords = [
+                            (current_x, aisle_top_y + space_l_deg),
+                            (current_x + space_w_deg, aisle_top_y + space_l_deg),
+                            (current_x + space_w_deg, aisle_top_y),
+                            (current_x, aisle_top_y),
+                            (current_x, aisle_top_y + space_l_deg)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_x += space_w_deg
                     
-                    space_poly = Polygon(space_coords)
-                    if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
-                        display_coords = [[(lon, lat) for lon, lat in space_coords]]
-                        parking_spaces.append(display_coords)
+                    # Spaces on bottom of aisle (facing up)
+                    current_x = center_bounds['left']
+                    aisle_bottom_y = row_center_y - (aisle_w_deg / 2)
                     
-                    current_x += space_w_deg
+                    while current_x < center_bounds['right']:
+                        space_coords = [
+                            (current_x, aisle_bottom_y),
+                            (current_x + space_w_deg, aisle_bottom_y),
+                            (current_x + space_w_deg, aisle_bottom_y - space_l_deg),
+                            (current_x, aisle_bottom_y - space_l_deg),
+                            (current_x, aisle_bottom_y)
+                        ]
+                        
+                        space_poly = Polygon(space_coords)
+                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
+                            display_coords = [[(lon, lat) for lon, lat in space_coords]]
+                            parking_spaces.append(display_coords)
+                        
+                        current_x += space_w_deg
+            else:
+                # Not enough space for center rows
+                add_app_log("Lot too small for center rows - perimeter only", "WARNING")
         
         elif use_bay_layout:
             bay_height = (bounds[3] - bounds[1]) / num_bays
