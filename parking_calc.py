@@ -1273,65 +1273,64 @@ with col1:
             corner_islands = []
             
             # Add corner islands if enabled
+            # ALWAYS define corner exclusion zones (regardless of checkbox)
+            corner_size_deg_lon = corner_island_size / lon_to_m
+            corner_size_deg_lat = corner_island_size / lat_to_m
+
+            corner_exclusion_zones = [
+                # Top-left
+                Polygon([
+                    (bounds[0], bounds[3] - corner_size_deg_lat),
+                    (bounds[0] + corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
+                    (bounds[0] + corner_size_deg_lon, bounds[3]),
+                    (bounds[0], bounds[3])
+                ]),
+                # Top-right
+                Polygon([
+                    (bounds[2] - corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
+                    (bounds[2], bounds[3] - corner_size_deg_lat),
+                    (bounds[2], bounds[3]),
+                    (bounds[2] - corner_size_deg_lon, bounds[3])
+                ]),
+                # Bottom-left
+                Polygon([
+                    (bounds[0], bounds[1]),
+                    (bounds[0] + corner_size_deg_lon, bounds[1]),
+                    (bounds[0] + corner_size_deg_lon, bounds[1] + corner_size_deg_lat),
+                    (bounds[0], bounds[1] + corner_size_deg_lat)
+                ]),
+                # Bottom-right
+                Polygon([
+                    (bounds[2] - corner_size_deg_lon, bounds[1]),
+                    (bounds[2], bounds[1]),
+                    (bounds[2], bounds[1] + corner_size_deg_lat),
+                    (bounds[2] - corner_size_deg_lon, bounds[1] + corner_size_deg_lat)
+                ])
+            ]
+
+            # Helper function (ALWAYS defined, always checks corners)
+            def conflicts_with_corners(space_poly):
+                """Check if parking space conflicts with corner exclusion zones"""
+                for corner_zone in corner_exclusion_zones:
+                    if space_poly.intersects(corner_zone) or corner_zone.contains(space_poly.centroid):
+                        return True
+                return False
+
+            # Only DRAW the visual islands if checkbox is enabled
             if include_corner_islands:
-                # Define corner exclusion zones (always, regardless of visual islands)
-                corner_size_deg_lon = corner_island_size / lon_to_m
-                corner_size_deg_lat = corner_island_size / lat_to_m
-
-                corner_exclusion_zones = [
-                    # Top-left
-                    Polygon([
-                        (bounds[0], bounds[3] - corner_size_deg_lat),
-                        (bounds[0] + corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
-                        (bounds[0] + corner_size_deg_lon, bounds[3]),
-                        (bounds[0], bounds[3])
-                    ]),
-                    # Top-right
-                    Polygon([
-                        (bounds[2] - corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
-                        (bounds[2], bounds[3] - corner_size_deg_lat),
-                        (bounds[2], bounds[3]),
-                        (bounds[2] - corner_size_deg_lon, bounds[3])
-                    ]),
-                    # Bottom-left
-                    Polygon([
-                        (bounds[0], bounds[1]),
-                        (bounds[0] + corner_size_deg_lon, bounds[1]),
-                        (bounds[0] + corner_size_deg_lon, bounds[1] + corner_size_deg_lat),
-                        (bounds[0], bounds[1] + corner_size_deg_lat)
-                    ]),
-                    # Bottom-right
-                    Polygon([
-                        (bounds[2] - corner_size_deg_lon, bounds[1]),
-                        (bounds[2], bounds[1]),
-                        (bounds[2], bounds[1] + corner_size_deg_lat),
-                        (bounds[2] - corner_size_deg_lon, bounds[1] + corner_size_deg_lat)
-                    ])
-                ]
-
-                # Only DRAW the islands if enabled, but ALWAYS exclude spaces from corners
-                if include_corner_islands:
-                    for corner_zone in corner_exclusion_zones:
-                        corner_coords = list(corner_zone.exterior.coords)
-                        
-                        # Draw corner island
-                        folium.Polygon(
-                            locations=[(lat, lon) for lon, lat in corner_coords],
-                            color='#2d5016',
-                            weight=2,
-                            fill=True,
-                            fillColor='#4a7c28',
-                            fillOpacity=0.7,
-                            popup='Corner Landscape Island'
-                        ).add_to(m)
-
-                # Helper function to check corner exclusion (always active)
-                def conflicts_with_corners(space_poly):
-                    for corner_zone in corner_exclusion_zones:
-                        if space_poly.intersects(corner_zone) or corner_zone.contains(space_poly.centroid):
-                            return True
-                    return False
-            
+                for corner_zone in corner_exclusion_zones:
+                    corner_coords = list(corner_zone.exterior.coords)
+                    
+                    # Draw corner island
+                    folium.Polygon(
+                        locations=[(lat, lon) for lon, lat in corner_coords],
+                        color='#2d5016',
+                        weight=2,
+                        fill=True,
+                        fillColor='#4a7c28',
+                        fillOpacity=0.7,
+                        popup='Corner Landscape Island'
+                    ).add_to(m)
             # Calculate the boundaries for center section (leaving circulation aisles)
             # Perimeter spaces + their aisle + circulation aisle
             circulation_clearance_lat = space_l_deg + (aisle_w_deg * 2)  # Space depth + aisle + circulation
@@ -1358,7 +1357,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1378,7 +1377,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):                    
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1398,7 +1397,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1418,7 +1417,7 @@ with col1:
                 ]
                 
                 space_poly = Polygon(space_coords)
-                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
+                if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
                     display_coords = [[(lon, lat) for lon, lat in space_coords]]
                     parking_spaces.append(display_coords)
                 
@@ -1455,7 +1454,7 @@ with col1:
                         ]
                         
                         space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
+                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
                             display_coords = [[(lon, lat) for lon, lat in space_coords]]
                             parking_spaces.append(display_coords)
                         
@@ -1475,7 +1474,7 @@ with col1:
                         ]
                         
                         space_poly = Polygon(space_coords)
-                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_corners(space_poly):
+                        if poly_latlon.contains(space_poly.centroid) and not conflicts_with_islands(space_poly):
                             display_coords = [[(lon, lat) for lon, lat in space_coords]]
                             parking_spaces.append(display_coords)
                         
