@@ -1072,7 +1072,20 @@ with col1:
         space_l = params['space_length']
         aisle_w = params['aisle_width']
         p_type = params['parking_type']
-        
+        # CONSERVATIVE LAYOUT MODE CHECK
+        if st.session_state.get('show_conservative', False):
+            target_space_count = params.get('target_spaces', 999999)
+            # Show info banner
+            if unit_system == "Imperial":
+                area_per_space_display = area_per_space * area_conversion
+            else:
+                area_per_space_display = area_per_space
+            
+            st.info(f"📐 **Conservative Layout Mode**: Showing planning estimate ({target_space_count} spaces based on {area_per_space_display:.0f} {area_unit}/space)")
+            add_app_log(f"Conservative layout mode: limiting to {target_space_count} spaces", "INFO")
+        else:
+            target_space_count = 999999  # No limit for optimized mode
+            add_app_log(f"Optimized layout mode: no space limit", "INFO")   
         # Convert polygon to Shapely polygon (in lat/lon)
         poly_latlon = Polygon([(lon, lat) for lon, lat in polygon_coords])
         bounds = poly_latlon.bounds  # (minx, miny, maxx, maxy)
@@ -1346,7 +1359,7 @@ with col1:
             # 1. TOP PERIMETER - Spaces facing down (into lot)
             current_x = bounds[0]
             perimeter_y = bounds[3] - space_l_deg - aisle_w_deg
-            
+
             while current_x < bounds[2]:
                 space_coords = [
                     (current_x, perimeter_y + space_l_deg),
@@ -1362,6 +1375,10 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_x += space_w_deg
+                
+                # ADD THIS CHECK AT THE END OF EACH WHILE LOOP
+                if len(parking_spaces) >= target_space_count:
+                    break
             
             # 2. BOTTOM PERIMETER - Spaces facing up (into lot)
             current_x = bounds[0]
@@ -1382,6 +1399,8 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_x += space_w_deg
+                if len(parking_spaces) >= target_space_count:
+                    break
             
             # 3. LEFT PERIMETER - Spaces facing right (into lot)
             current_y = bounds[1]
@@ -1402,6 +1421,8 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_y += space_w_deg
+                if len(parking_spaces) >= target_space_count:
+                    break
             
             # 4. RIGHT PERIMETER - Spaces facing left (into lot)
             current_y = bounds[1]
@@ -1422,7 +1443,8 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_y += space_w_deg
-            
+                if len(parking_spaces) >= target_space_count:
+                    break
             # 5. CENTER DOUBLE-LOADED ROWS (with proper clearance from perimeter)
             # Only create center rows if there's enough space
             center_height = center_bounds['top'] - center_bounds['bottom']
@@ -1473,6 +1495,8 @@ with col1:
                             parking_spaces.append(display_coords)
                         
                         current_x += space_w_deg
+                        if len(parking_spaces) >= target_space_count:
+                            break
                     
                     # Spaces on bottom of aisle (facing up)
                     current_x = center_bounds['left']
@@ -1493,6 +1517,8 @@ with col1:
                             parking_spaces.append(display_coords)
                         
                         current_x += space_w_deg
+                        if len(parking_spaces) >= target_space_count:
+                            break
             else:
                 # Not enough space for center rows
                 if center_aisle_count > 1:
@@ -1701,6 +1727,8 @@ with col1:
                             parking_spaces.append(display_coords)
                         
                         current_x += space_w_deg
+                        if len(parking_spaces) >= target_space_count:
+                            break
                     
                     aisle_w_deg = aisle_w / lat_to_m
                     current_y += (space_l_deg if space_direction == 1 else 0) + aisle_w_deg
@@ -1730,6 +1758,8 @@ with col1:
                             parking_spaces.append(display_coords)
                         
                         current_y += space_w_deg
+                        if len(parking_spaces) >= target_space_count:
+                            break
                     
                     aisle_w_deg = aisle_w / lon_to_m
                     current_x += (space_l_deg if space_direction == 1 else 0) + aisle_w_deg
@@ -1762,6 +1792,8 @@ with col1:
                             parking_spaces.append(display_coords)
                         
                         current_x += space_w_deg
+                        if len(parking_spaces) >= target_space_count:
+                            break
                     
                     aisle_w_deg = aisle_w / lat_to_m
                     current_y += (space_l_deg * np.cos(angle_rad) if angle_direction == 1 else 0) + aisle_w_deg
@@ -1791,6 +1823,8 @@ with col1:
                             parking_spaces.append(display_coords)
                         
                         current_y += space_w_deg
+                        if len(parking_spaces) >= target_space_count:
+                            break
                     
                     aisle_w_deg = aisle_w / lon_to_m
                     current_x += (space_l_deg * np.cos(angle_rad) if angle_direction == 1 else 0) + aisle_w_deg
@@ -1833,6 +1867,8 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_x += space_l_deg
+                if len(parking_spaces) >= target_space_count:
+                            break
             
             # Left and right edges
             current_y = bounds[1]
@@ -1870,6 +1906,8 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_y += space_l_deg
+                if len(parking_spaces) >= target_space_count:
+                    break
         
         # Add parking spaces to map
         for space_coords in parking_spaces:
@@ -1927,15 +1965,7 @@ with col2:
                 coords = last_drawing['geometry']['coordinates'][0]
                 st.session_state.polygon_coords = coords
                 
-                # Capture the center point of the polygon for zoom persistence
-                lats = [coord[1] for coord in coords]
-                lons = [coord[0] for coord in coords]
-                center_lat = sum(lats) / len(lats)
-                center_lon = sum(lons) / len(lons)
-                st.session_state.polygon_center = [center_lat, center_lon]
-                st.session_state.polygon_zoom = 19  # Zoom in closer when polygon is drawn
-                
-                add_app_log(f"Captured polygon center: [{center_lat:.6f}, {center_lon:.6f}]", "INFO")
+                # ... [existing coordinate capture code] ...
                 
                 # Calculate area using Shapely
                 lat_to_m = 111000
@@ -1991,101 +2021,55 @@ with col2:
         if results.get('structure_type') != "Surface Lot (2D)":
             st.info(f"🏢 **{results.get('structure_type')}**\n\n{results.get('num_levels', 1)} Level(s)")
         
-        # Display area in selected unit system
+        # Display area - THIS IS THE ACTUAL LOT SIZE
+        st.markdown("### 📏 Lot Dimensions")
         if unit_system == "Imperial":
-            st.metric("Total Area (per level)", f"{results['area_m2'] * area_conversion:,.1f} {area_unit}")
+            st.metric("Total Lot Area (per level)", f"{results['area_m2'] * area_conversion:,.1f} {area_unit}")
         else:
-            st.metric("Total Area (per level)", f"{results['area_m2']:,.1f} {area_unit}")
-            st.metric("Total Area (per level)", f"{results['area_m2'] * 10.764:,.1f} ft²")
+            st.metric("Total Lot Area (per level)", f"{results['area_m2']:,.1f} {area_unit}")
+            st.caption(f"= {results['area_m2'] * 10.764:,.1f} ft²")
         
-        # Show per-level and total estimates
+        st.markdown("---")
+        st.markdown("### 📊 Capacity Comparison")
+        
+        # Show planning estimate with clear explanation
         if results.get('num_levels', 1) > 1:
-            st.metric("Estimated Spaces (per level)", f"{results.get('estimated_spaces_per_level', 0):,}")
-            st.metric("Estimated Total Spaces", f"{results['estimated_spaces']:,}", 
-                     help=f"{results.get('estimated_spaces_per_level', 0)} spaces × {results.get('num_levels', 1)} levels")
+            st.markdown(f"**📐 Planning Estimate** (Based on {results.get('area_per_space', 'N/A') * area_conversion:.0f} {area_unit}/space)")
+            st.metric("Conservative Estimate (per level)", f"{results.get('estimated_spaces_per_level', 0):,}")
+            st.metric("Conservative Total", f"{results['estimated_spaces']:,}", 
+                     help=f"Based on industry standard: {results.get('area_per_space', 0) * area_conversion:.0f} {area_unit} per space")
         else:
-            st.metric("Estimated Parking Spaces", f"{results['estimated_spaces']:,}")
+            st.markdown(f"**📐 Planning Estimate** (Based on {results.get('area_per_space', 0) * area_conversion:.0f} {area_unit}/space)")
+            st.metric("Conservative Estimate", f"{results['estimated_spaces']:,}",
+                     help=f"Based on industry standard: {results.get('area_per_space', 0) * area_conversion:.0f} {area_unit} per space")
+        
+        st.caption("⚠️ This is a conservative planning estimate that includes aisles, circulation, landscaping, and buffer areas.")
         
         # Show actual drawn spaces if layout is displayed
         if st.session_state.get('show_layout') and st.session_state.get('actual_spaces_drawn'):
             actual_per_level = st.session_state.actual_spaces_drawn
             actual_total = actual_per_level * results.get('num_levels', 1)
             
+            # Calculate actual efficiency
+            actual_area_per_space = results['area_m2'] / actual_per_level if actual_per_level > 0 else 0
+            
+            st.markdown("---")
+            
             if results.get('num_levels', 1) > 1:
+                st.markdown("**🎯 Optimized Layout** (Actual spaces that fit)")
                 st.metric("Actual Spaces (per level)", f"{actual_per_level:,}")
                 st.metric("Actual Total Spaces", f"{actual_total:,}",
-                         delta=f"{actual_total - results['estimated_spaces']} vs estimate")
+                         delta=f"+{actual_total - results['estimated_spaces']} vs estimate",
+                         delta_color="normal")
             else:
+                st.markdown("**🎯 Optimized Layout** (Actual spaces that fit)")
                 st.metric("Actual Parking Spaces", f"{actual_per_level:,}", 
-                         delta=f"{actual_per_level - results['estimated_spaces']} vs estimate")
-        
-        st.markdown("---")
-        st.markdown("**Breakdown:**")
-        
-        # Display dimensions in selected unit system
-        if unit_system == "Imperial":
-            st.write(f"• Space size: {results['space_width'] * length_conversion:.1f}{length_unit} × {results['space_length'] * length_conversion:.1f}{length_unit}")
-            st.write(f"• Space area: {results['space_area'] * area_conversion:.1f} {area_unit}")
-            st.write(f"• Aisle width: {results['aisle_width'] * length_conversion:.1f}{length_unit}")
-        else:
-            st.write(f"• Space size: {results['space_width']:.1f}{length_unit} × {results['space_length']:.1f}{length_unit}")
-            st.write(f"• Space area: {results['space_area']:.1f} {area_unit}")
-            st.write(f"• Aisle width: {results['aisle_width']:.1f}{length_unit}")
-        
-        if 'calculation_method' in results and results['calculation_method'] == "Area per Space (ITE Standard)":
+                         delta=f"+{actual_per_level - results['estimated_spaces']} vs estimate",
+                         delta_color="normal")
+            
+            # Show actual efficiency achieved
             if unit_system == "Imperial":
-                st.write(f"• Area per space: {results.get('area_per_space', 0) * area_conversion:.1f} {area_unit}")
-            else:
-                st.write(f"• Area per space: {results.get('area_per_space', 'N/A'):.1f} {area_unit} ({results.get('area_per_space', 0) * 10.764:.1f} sf)")
-            st.write(f"• Method: ITE Standard")
-        else:
-            st.write(f"• Efficiency: {results['efficiency']*100}%")
-            st.write(f"• Method: Efficiency Factor")
-        
-        # Calculate density based on unit system
-        if unit_system == "Imperial":
-            spaces_per_unit = results['estimated_spaces'] / (results['area_m2'] * area_conversion) * 1000  # per 1000 sf
-            st.markdown(f"**Density:** {spaces_per_unit:.2f} spaces per 1000{area_unit}")
-        else:
-            spaces_per_sqm = results['estimated_spaces'] / results['area_m2']
-            st.markdown(f"**Density:** {spaces_per_sqm*100:.2f} spaces per 100{area_unit}")
-        
-        st.markdown("---")
-        
-        # Button to generate/toggle parking layout
-        col_btn1, col_btn2 = st.columns(2)
-        with col_btn1:
-            if st.button("🚗 Generate Layout", key="generate_layout_btn", type="primary"):
-                if st.session_state.polygon_coords:
-                    st.session_state.show_layout = True
-                    st.session_state.layout_params = {
-                        'polygon': st.session_state.polygon_coords,
-                        'space_width': space_width,
-                        'space_length': space_length,
-                        'aisle_width': aisle_width,
-                        'parking_type': parking_type,
-                        'estimated_spaces': results['estimated_spaces']
-                    }
-                    add_app_log(f"User requested parking layout generation", "INFO")
-                    st.rerun()
-        
-        with col_btn2:
-            if st.session_state.get('show_layout', False):
-                if st.button("🗑️ Clear Layout", key="clear_layout_btn"):
-                    st.session_state.show_layout = False
-                    st.session_state.actual_spaces_drawn = None
-                    st.session_state.layout_params = None
-                    add_app_log(f"User cleared parking layout", "INFO")
-                    st.rerun()
-    else:
-        st.info("👈 Draw a polygon on the map to calculate parking capacity")
-        st.markdown("""
-        **Instructions:**
-        1. Use the drawing tools on the left side of the map
-        2. Click the polygon or rectangle tool
-        3. Draw your parking area
-        4. Results will appear here automatically
-        """)
+                st.caption(f"✅ Achieved: {actual_area_per_space * area_conversion:.0f} {area_unit}/space (More effici
 
 st.markdown("---")
 
