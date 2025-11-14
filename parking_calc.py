@@ -1965,7 +1965,15 @@ with col2:
                 coords = last_drawing['geometry']['coordinates'][0]
                 st.session_state.polygon_coords = coords
                 
-                # ... [existing coordinate capture code] ...
+                # Capture the center point of the polygon for zoom persistence
+                lats = [coord[1] for coord in coords]
+                lons = [coord[0] for coord in coords]
+                center_lat = sum(lats) / len(lats)
+                center_lon = sum(lons) / len(lons)
+                st.session_state.polygon_center = [center_lat, center_lon]
+                st.session_state.polygon_zoom = 19
+                
+                add_app_log(f"Captured polygon center: [{center_lat:.6f}, {center_lon:.6f}]", "INFO")
                 
                 # Calculate area using Shapely
                 lat_to_m = 111000
@@ -1990,7 +1998,8 @@ with col2:
                 else:
                     estimated_spaces_per_level = int((area_m2 * efficiency) / space_area)
                     calc_method_stored = "Efficiency Factor"
-                    area_per_space_stored = None
+                    # Store the IMPLIED area per space for display purposes
+                    area_per_space_stored = area_m2 / estimated_spaces_per_level if estimated_spaces_per_level > 0 else space_area / efficiency
                 
                 # Multiply by number of levels for structures
                 estimated_spaces = estimated_spaces_per_level * num_levels
@@ -2032,16 +2041,26 @@ with col2:
         st.markdown("---")
         st.markdown("### 📊 Capacity Comparison")
         
+        # Get area per space with safety check
+        display_area_per_space = results.get('area_per_space', 0)
+        if display_area_per_space is None or display_area_per_space == 0:
+            display_area_per_space = results['area_m2'] / results['estimated_spaces'] if results['estimated_spaces'] > 0 else 350 / area_conversion
+        
         # Show planning estimate with clear explanation
+        if unit_system == "Imperial":
+            area_per_space_display = display_area_per_space * area_conversion
+        else:
+            area_per_space_display = display_area_per_space
+        
         if results.get('num_levels', 1) > 1:
-            st.markdown(f"**📐 Planning Estimate** (Based on {results.get('area_per_space', 'N/A') * area_conversion:.0f} {area_unit}/space)")
+            st.markdown(f"**📐 Planning Estimate** (Based on {area_per_space_display:.0f} {area_unit}/space)")
             st.metric("Conservative Estimate (per level)", f"{results.get('estimated_spaces_per_level', 0):,}")
             st.metric("Conservative Total", f"{results['estimated_spaces']:,}", 
-                     help=f"Based on industry standard: {results.get('area_per_space', 0) * area_conversion:.0f} {area_unit} per space")
+                     help=f"Based on {area_per_space_display:.0f} {area_unit} per space")
         else:
-            st.markdown(f"**📐 Planning Estimate** (Based on {results.get('area_per_space', 0) * area_conversion:.0f} {area_unit}/space)")
+            st.markdown(f"**📐 Planning Estimate** (Based on {area_per_space_display:.0f} {area_unit}/space)")
             st.metric("Conservative Estimate", f"{results['estimated_spaces']:,}",
-                     help=f"Based on industry standard: {results.get('area_per_space', 0) * area_conversion:.0f} {area_unit} per space")
+                     help=f"Based on {area_per_space_display:.0f} {area_unit} per space")
         
         st.caption("⚠️ This is a conservative planning estimate that includes aisles, circulation, landscaping, and buffer areas.")
         
@@ -2067,6 +2086,7 @@ with col2:
                          delta=f"+{actual_per_level - results['estimated_spaces']} vs estimate",
                          delta_color="normal")
             
+            # Show actual efficiency achieved
             if unit_system == "Imperial":
                 st.caption(f"✅ Achieved: {actual_area_per_space * area_conversion:.0f} {area_unit}/space (More efficient than planning estimate!)")
             else:
@@ -2087,12 +2107,13 @@ with col2:
         
         if 'calculation_method' in results and results['calculation_method'] == "Area per Space (ITE Standard)":
             if unit_system == "Imperial":
-                st.write(f"• Planning ratio: {results.get('area_per_space', 0) * area_conversion:.1f} {area_unit}/space")
+                st.write(f"• Planning ratio: {area_per_space_display:.1f} {area_unit}/space")
             else:
-                st.write(f"• Planning ratio: {results.get('area_per_space', 'N/A'):.1f} {area_unit}/space ({results.get('area_per_space', 0) * 10.764:.1f} sf)")
+                st.write(f"• Planning ratio: {area_per_space_display:.1f} {area_unit}/space ({area_per_space_display * 10.764:.1f} sf)")
             st.write(f"• Method: ITE Planning Standard")
         else:
             st.write(f"• Efficiency: {results['efficiency']*100}%")
+            st.write(f"• Implied area per space: {area_per_space_display:.1f} {area_unit}")
             st.write(f"• Method: Efficiency Factor")
         
         st.markdown("---")
@@ -2127,7 +2148,7 @@ with col2:
                         'aisle_width': aisle_width,
                         'parking_type': parking_type,
                         'estimated_spaces': results['estimated_spaces'],
-                        'target_spaces': results['estimated_spaces']  # Limit to conservative estimate
+                        'target_spaces': results['estimated_spaces']
                     }
                     add_app_log(f"User requested conservative parking layout", "INFO")
                     st.rerun()
@@ -2141,6 +2162,15 @@ with col2:
                     st.session_state.layout_params = None
                     add_app_log(f"User cleared parking layout", "INFO")
                     st.rerun()
+    else:
+        st.info("👈 Draw a polygon on the map to calculate parking capacity")
+        st.markdown("""
+        **Instructions:**
+        1. Use the drawing tools on the left side of the map
+        2. Click the polygon or rectangle tool
+        3. Draw your parking area
+        4. Results will appear here automatically
+        """)
 
 st.markdown("---")
 
