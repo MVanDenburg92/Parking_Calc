@@ -1934,8 +1934,15 @@ with col1:
             ).add_to(m)
         
         # Store actual number of spaces drawn
+        # Store actual number of spaces drawn WITH layout type
         st.session_state.actual_spaces_drawn = len(parking_spaces)
-        
+        st.session_state.current_layout_type = "conservative" if st.session_state.get('show_conservative', False) else "optimized"
+
+        # Store both values separately for comparison
+        if st.session_state.get('show_conservative', False):
+            st.session_state.conservative_spaces = len(parking_spaces)
+        else:
+            st.session_state.optimized_spaces = len(parking_spaces)        
         # Store parking spaces for 3D visualization
         parking_spaces_3d = []
         for space in parking_spaces:
@@ -2084,26 +2091,49 @@ with col2:
             # Calculate actual efficiency
             actual_area_per_space = results['area_m2'] / actual_per_level if actual_per_level > 0 else 0
             
+            # Determine which layout is currently shown
+            current_layout = st.session_state.get('current_layout_type', 'optimized')
+            
             st.markdown("---")
             
+            # Display with appropriate label based on layout type
+            if current_layout == "conservative":
+                st.markdown("**📐 Conservative Layout** (Currently displayed)")
+            else:
+                st.markdown("**🎯 Optimized Layout** (Currently displayed)")
+            
             if results.get('num_levels', 1) > 1:
-                st.markdown("**🎯 Optimized Layout** (Actual spaces that fit)")
                 st.metric("Actual Spaces (per level)", f"{actual_per_level:,}")
                 st.metric("Actual Total Spaces", f"{actual_total:,}",
-                         delta=f"+{actual_total - results['estimated_spaces']} vs estimate",
-                         delta_color="normal")
+                        delta=f"{actual_total - results['estimated_spaces']:+,} vs estimate",
+                        delta_color="normal")
             else:
-                st.markdown("**🎯 Optimized Layout** (Actual spaces that fit)")
                 st.metric("Actual Parking Spaces", f"{actual_per_level:,}", 
-                         delta=f"+{actual_per_level - results['estimated_spaces']} vs estimate",
-                         delta_color="normal")
+                        delta=f"{actual_per_level - results['estimated_spaces']:+,} vs estimate",
+                        delta_color="normal")
             
             # Show actual efficiency achieved
             if unit_system == "Imperial":
-                st.caption(f"✅ Achieved: {actual_area_per_space * area_conversion:.0f} {area_unit}/space (More efficient than planning estimate!)")
+                st.caption(f"✅ Achieved: {actual_area_per_space * area_conversion:.0f} {area_unit}/space")
             else:
-                st.caption(f"✅ Achieved: {actual_area_per_space:.1f} {area_unit}/space (More efficient than planning estimate!)")
-        
+                st.caption(f"✅ Achieved: {actual_area_per_space:.1f} {area_unit}/space")
+            
+            # Show comparison if both layouts have been generated
+            if 'optimized_spaces' in st.session_state and 'conservative_spaces' in st.session_state:
+                st.markdown("---")
+                st.markdown("**📊 Layout Comparison:**")
+                
+                opt_spaces = st.session_state.optimized_spaces * results.get('num_levels', 1)
+                cons_spaces = st.session_state.conservative_spaces * results.get('num_levels', 1)
+                
+                col_comp1, col_comp2 = st.columns(2)
+                with col_comp1:
+                    st.metric("Optimized Total", f"{opt_spaces:,}")
+                with col_comp2:
+                    st.metric("Conservative Total", f"{cons_spaces:,}")
+                
+                difference = opt_spaces - cons_spaces
+                st.caption(f"💡 Optimized layout fits **{difference:,} more spaces** (+{(difference/cons_spaces*100):.1f}%)")
         st.markdown("---")
         st.markdown("**📋 Configuration Details:**")
         
