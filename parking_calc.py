@@ -464,8 +464,8 @@ else:
 # Calculation method toggle
 calculation_method = st.sidebar.radio(
     "Calculation Method",
-    ["Efficiency Factor", "Area per Space (ITE Standard)"],
-    help="Choose between efficiency factor method or industry-standard area per space"
+    ["Area per Space (ITE Standard)","Efficiency Factor"],
+    help="Choose between industry-standard area per space or efficiency factor method"
 )
 
 st.sidebar.markdown("---")
