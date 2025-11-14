@@ -1075,17 +1075,29 @@ with col1:
         # CONSERVATIVE LAYOUT MODE CHECK
         if st.session_state.get('show_conservative', False):
             target_space_count = params.get('target_spaces', 999999)
-            # Show info banner
-            if unit_system == "Imperial":
-                area_per_space_display = area_per_space * area_conversion
+            
+            # Get area per space from session state (safer than local variable)
+            if st.session_state.calculation_results:
+                display_area_per_space = st.session_state.calculation_results.get('area_per_space', 0)
+                if display_area_per_space is None or display_area_per_space == 0:
+                    # Fallback calculation
+                    results = st.session_state.calculation_results
+                    display_area_per_space = results['area_m2'] / results['estimated_spaces'] if results['estimated_spaces'] > 0 else 350 / area_conversion
             else:
-                area_per_space_display = area_per_space
+                # Ultimate fallback
+                display_area_per_space = 350 / area_conversion if unit_system == "Imperial" else 32.5
+            
+            # Convert to display units
+            if unit_system == "Imperial":
+                area_per_space_display = display_area_per_space * area_conversion
+            else:
+                area_per_space_display = display_area_per_space
             
             st.info(f"📐 **Conservative Layout Mode**: Showing planning estimate ({target_space_count} spaces based on {area_per_space_display:.0f} {area_unit}/space)")
             add_app_log(f"Conservative layout mode: limiting to {target_space_count} spaces", "INFO")
         else:
             target_space_count = 999999  # No limit for optimized mode
-            add_app_log(f"Optimized layout mode: no space limit", "INFO")   
+            add_app_log(f"Optimized layout mode: no space limit", "INFO") 
         # Convert polygon to Shapely polygon (in lat/lon)
         poly_latlon = Polygon([(lon, lat) for lon, lat in polygon_coords])
         bounds = poly_latlon.bounds  # (minx, miny, maxx, maxy)
