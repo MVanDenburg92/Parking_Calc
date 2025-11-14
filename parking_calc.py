@@ -2067,9 +2067,80 @@ with col2:
                          delta=f"+{actual_per_level - results['estimated_spaces']} vs estimate",
                          delta_color="normal")
             
-            # Show actual efficiency achieved
             if unit_system == "Imperial":
-                st.caption(f"✅ Achieved: {actual_area_per_space * area_conversion:.0f} {area_unit}/space (More effici
+                st.caption(f"✅ Achieved: {actual_area_per_space * area_conversion:.0f} {area_unit}/space (More efficient than planning estimate!)")
+            else:
+                st.caption(f"✅ Achieved: {actual_area_per_space:.1f} {area_unit}/space (More efficient than planning estimate!)")
+        
+        st.markdown("---")
+        st.markdown("**📋 Configuration Details:**")
+        
+        # Display dimensions in selected unit system
+        if unit_system == "Imperial":
+            st.write(f"• Space size: {results['space_width'] * length_conversion:.1f}{length_unit} × {results['space_length'] * length_conversion:.1f}{length_unit}")
+            st.write(f"• Space area: {results['space_area'] * area_conversion:.1f} {area_unit}")
+            st.write(f"• Aisle width: {results['aisle_width'] * length_conversion:.1f}{length_unit}")
+        else:
+            st.write(f"• Space size: {results['space_width']:.1f}{length_unit} × {results['space_length']:.1f}{length_unit}")
+            st.write(f"• Space area: {results['space_area']:.1f} {area_unit}")
+            st.write(f"• Aisle width: {results['aisle_width']:.1f}{length_unit}")
+        
+        if 'calculation_method' in results and results['calculation_method'] == "Area per Space (ITE Standard)":
+            if unit_system == "Imperial":
+                st.write(f"• Planning ratio: {results.get('area_per_space', 0) * area_conversion:.1f} {area_unit}/space")
+            else:
+                st.write(f"• Planning ratio: {results.get('area_per_space', 'N/A'):.1f} {area_unit}/space ({results.get('area_per_space', 0) * 10.764:.1f} sf)")
+            st.write(f"• Method: ITE Planning Standard")
+        else:
+            st.write(f"• Efficiency: {results['efficiency']*100}%")
+            st.write(f"• Method: Efficiency Factor")
+        
+        st.markdown("---")
+        
+        # Button to generate/toggle parking layout
+        col_btn1, col_btn2, col_btn3 = st.columns(3)
+        with col_btn1:
+            if st.button("🎯 Optimized Layout", key="generate_layout_btn", type="primary"):
+                if st.session_state.polygon_coords:
+                    st.session_state.show_layout = True
+                    st.session_state.show_conservative = False
+                    st.session_state.layout_params = {
+                        'polygon': st.session_state.polygon_coords,
+                        'space_width': space_width,
+                        'space_length': space_length,
+                        'aisle_width': aisle_width,
+                        'parking_type': parking_type,
+                        'estimated_spaces': results['estimated_spaces']
+                    }
+                    add_app_log(f"User requested optimized parking layout", "INFO")
+                    st.rerun()
+        
+        with col_btn2:
+            if st.button("📐 Conservative Layout", key="generate_conservative_btn"):
+                if st.session_state.polygon_coords:
+                    st.session_state.show_layout = True
+                    st.session_state.show_conservative = True
+                    st.session_state.layout_params = {
+                        'polygon': st.session_state.polygon_coords,
+                        'space_width': space_width,
+                        'space_length': space_length,
+                        'aisle_width': aisle_width,
+                        'parking_type': parking_type,
+                        'estimated_spaces': results['estimated_spaces'],
+                        'target_spaces': results['estimated_spaces']  # Limit to conservative estimate
+                    }
+                    add_app_log(f"User requested conservative parking layout", "INFO")
+                    st.rerun()
+        
+        with col_btn3:
+            if st.session_state.get('show_layout', False):
+                if st.button("🗑️ Clear Layout", key="clear_layout_btn"):
+                    st.session_state.show_layout = False
+                    st.session_state.show_conservative = False
+                    st.session_state.actual_spaces_drawn = None
+                    st.session_state.layout_params = None
+                    add_app_log(f"User cleared parking layout", "INFO")
+                    st.rerun()
 
 st.markdown("---")
 
