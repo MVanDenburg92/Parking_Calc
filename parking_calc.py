@@ -956,22 +956,53 @@ with col1:
             st.info("📐 **Conservative Layout Mode**: Using industry-standard conservative dimensions (larger spaces, wider aisles, landscaping buffers)")
             add_app_log(f"Conservative layout mode: applying conservative dimensions", "INFO")
             
-            # Apply conservative dimension adjustments based on ULI & ITE standards
-            if "Perpendicular" in p_type or "Compact" in p_type:
-                # Conservative perpendicular: 9' x 19' spaces, 26' aisles
-                space_w = 9.0 / length_conversion  # 9 ft (2.74m)
-                space_l = 19.0 / length_conversion  # 19 ft (5.79m)
-                aisle_w = 26.0 / length_conversion  # 26 ft (7.92m)
-            elif "Angled" in p_type:
-                # Conservative angled: 9' x 20' spaces, 16' aisles
-                space_w = 9.0 / length_conversion
-                space_l = 20.0 / length_conversion
-                aisle_w = 16.0 / length_conversion
-            else:  # Parallel
-                # Conservative parallel: 9' x 24' spaces, 14' aisles
-                space_w = 9.0 / length_conversion
-                space_l = 24.0 / length_conversion
-                aisle_w = 14.0 / length_conversion
+            # Check which calculation method is being used
+            if calculation_method == "Area per Space (ITE Standard)":
+                # For Area per Space method, back-calculate dimensions to achieve target
+                # Target area per space includes the space + its share of aisle
+                # Formula: area_per_space = (space_width * space_length) + (space_width * aisle_share)
+                
+                # Use conservative ratios while achieving target area per space
+                # Conservative ratio: width = 9', depth = 19', aisle = 26'
+                # This gives: 9' × (19' + 13') = 9' × 32' = 288 sf per space for perpendicular
+                
+                # Scale up proportionally to hit target area per space
+                target_area_sf = area_per_space * area_conversion  # Convert to sf
+                conservative_base_area = 288  # 9' × 32' (space + half aisle)
+                scale_factor = (target_area_sf / conservative_base_area) ** 0.5
+                
+                if "Perpendicular" in p_type or "Compact" in p_type:
+                    space_w = (9.0 * scale_factor) / length_conversion
+                    space_l = (19.0 * scale_factor) / length_conversion
+                    aisle_w = (26.0 * scale_factor) / length_conversion
+                elif "Angled" in p_type:
+                    space_w = (9.0 * scale_factor) / length_conversion
+                    space_l = (20.0 * scale_factor) / length_conversion
+                    aisle_w = (16.0 * scale_factor) / length_conversion
+                else:  # Parallel
+                    space_w = (9.0 * scale_factor) / length_conversion
+                    space_l = (24.0 * scale_factor) / length_conversion
+                    aisle_w = (14.0 * scale_factor) / length_conversion
+                
+                add_app_log(f"Conservative mode scaled to achieve {target_area_sf:.0f} sf/space", "INFO")
+            
+            else:
+                # For Efficiency Factor method, use fixed conservative dimensions
+                if "Perpendicular" in p_type or "Compact" in p_type:
+                    # Conservative perpendicular: 9' x 19' spaces, 26' aisles
+                    space_w = 9.0 / length_conversion  # 9 ft (2.74m)
+                    space_l = 19.0 / length_conversion  # 19 ft (5.79m)
+                    aisle_w = 26.0 / length_conversion  # 26 ft (7.92m)
+                elif "Angled" in p_type:
+                    # Conservative angled: 9' x 20' spaces, 16' aisles
+                    space_w = 9.0 / length_conversion
+                    space_l = 20.0 / length_conversion
+                    aisle_w = 16.0 / length_conversion
+                else:  # Parallel
+                    # Conservative parallel: 9' x 24' spaces, 14' aisles
+                    space_w = 9.0 / length_conversion
+                    space_l = 24.0 / length_conversion
+                    aisle_w = 14.0 / length_conversion
             
             # Add perimeter buffer (landscaping requirement: 10 ft)
             perimeter_buffer = 10.0 / length_conversion  # 10 ft (3.05m)
