@@ -286,22 +286,33 @@ if layout_orientation == "Perimeter + Center (High Efficiency)":
         help="Add landscaped islands in corners"
     )
     
+    # Calculate required corner size based on mode
+    if st.session_state.get('show_conservative', False):
+        # Conservative: needs space depth + aisle = 19 + 26 = 45 ft
+        required_corner_size = 45.0
+    else:
+        # Optimized: needs space depth + aisle = 16.4 + 19.7 = 36.1 ft  
+        required_corner_size = 36.1
+    
     if unit_system == "Imperial":
         corner_island_size_display = st.sidebar.number_input(
             f"Corner Island Size ({length_unit})",
             min_value=10.0,
-            max_value=50.0,
-            value=25.0,
-            step=5.0
+            max_value=80.0,  # Increased max
+            value=required_corner_size,  # Dynamic default!
+            step=5.0,
+            help=f"Recommended: {required_corner_size:.0f}ft for current settings"
         )
         corner_island_size = corner_island_size_display / length_conversion
     else:
+        required_corner_size_m = required_corner_size / 3.28084
         corner_island_size = st.sidebar.number_input(
             f"Corner Island Size ({length_unit})",
             min_value=3.0,
-            max_value=15.0,
-            value=7.5,
-            step=1.0
+            max_value=24.0,  # Increased max
+            value=required_corner_size_m,
+            step=1.0,
+            help=f"Recommended: {required_corner_size_m:.1f}m for current settings"
         )
     
     center_aisle_count = st.sidebar.slider(
