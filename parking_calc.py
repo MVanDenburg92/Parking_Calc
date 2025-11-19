@@ -2,10 +2,17 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 from shapely.geometry import Polygon
+from shapely.geometry import box, Point
+from shapely.affinity import rotate, translate
 import math
 import numpy as np
 import pydeck as pdk
 import pandas as pd
+import requests
+import urllib3
+import urllib.parse
+import logging
+from datetime import datetime
 
 st.set_page_config(page_title="Parking Space Estimator", layout="wide", initial_sidebar_state="expanded")
 
@@ -38,10 +45,6 @@ st.markdown("""
 st.title("🅿️ Parking Space Estimator")
 st.markdown("Draw a polygon on the map to estimate how many parking spaces could fit in the area.")
 
-# Set up logging
-import logging
-from datetime import datetime
-
 # Initialize app logs in session state
 if 'app_logs' not in st.session_state:
     st.session_state.app_logs = []
@@ -62,8 +65,6 @@ logging.basicConfig(
 # Test endpoint availability with logging
 def test_endpoint_availability(name, url):
     try:
-        import requests
-        import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         
         logging.info(f"Testing {name} endpoint: {url}")
@@ -96,8 +97,6 @@ def test_endpoint_availability(name, url):
 # Test NAIP endpoint availability
 def test_naip_availability():
     try:
-        import requests
-        import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         
         service_url = "https://naip.arcgis.com/arcgis/rest/services/NAIP/ImageServer?f=json"
@@ -581,10 +580,6 @@ with search_col2:
 
 if search_button and address:
     try:
-        import requests
-        import urllib.parse
-        import logging
-        
         encoded_address = urllib.parse.quote(address)
         url = f"https://nominatim.openstreetmap.org/search?q={encoded_address}&format=json&limit=1"
         
@@ -598,7 +593,6 @@ if search_button and address:
             timeout=10
         )
         
-        import urllib3
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         
         if response.status_code == 200:
@@ -942,14 +936,7 @@ with col1:
     # Add parking space layout if requested
     if st.session_state.get('show_layout', False) and st.session_state.get('layout_params'):
         params = st.session_state.layout_params
-        
-        from shapely.geometry import box, Point
-        from shapely.affinity import rotate, translate
-        
         polygon_coords = params['polygon']
-        space_w = params['space_width']
-        space_l = params['space_length']
-        aisle_w = params['aisle_width']
         p_type = params['parking_type']
         
         # CONSERVATIVE VS OPTIMIZED LAYOUT MODE
@@ -977,11 +964,16 @@ with col1:
             
             # Add perimeter buffer (landscaping requirement: 10 ft)
             perimeter_buffer = 10.0 / length_conversion  # 10 ft (3.05m)
-            
+                        
         else:
-            # OPTIMIZED MODE: Use user's specified dimensions
+            # OPTIMIZED MODE: Use user's specified dimensions from params
             add_app_log(f"Optimized layout mode: using user dimensions", "INFO")
             perimeter_buffer = 0  # No buffer for optimized
+            
+            # Use params dimensions (already set)
+            space_w = params['space_width']
+            space_l = params['space_length']
+            aisle_w = params['aisle_width']
         
         # Convert polygon to Shapely polygon (in lat/lon)
         poly_latlon = Polygon([(lon, lat) for lon, lat in polygon_coords])
