@@ -1295,43 +1295,37 @@ with col1:
             aisle_w_deg = aisle_w / lat_to_m
             aisle_w_deg_lon = aisle_w / lon_to_m
             
-            corner_islands = []
-            
-            # Add corner islands if enabled
-            # ALWAYS define corner exclusion zones (regardless of checkbox)
-            corner_size_deg_lon = corner_island_size / lon_to_m
-            corner_size_deg_lat = corner_island_size / lat_to_m
-
-            corner_exclusion_zones = [
-                # Top-left
-                Polygon([
-                    (bounds[0], bounds[3] - corner_size_deg_lat),
-                    (bounds[0] + corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
-                    (bounds[0] + corner_size_deg_lon, bounds[3]),
-                    (bounds[0], bounds[3])
-                ]),
-                # Top-right
-                Polygon([
-                    (bounds[2] - corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
-                    (bounds[2], bounds[3] - corner_size_deg_lat),
-                    (bounds[2], bounds[3]),
-                    (bounds[2] - corner_size_deg_lon, bounds[3])
-                ]),
-                # Bottom-left
-                Polygon([
-                    (bounds[0], bounds[1]),
-                    (bounds[0] + corner_size_deg_lon, bounds[1]),
-                    (bounds[0] + corner_size_deg_lon, bounds[1] + corner_size_deg_lat),
-                    (bounds[0], bounds[1] + corner_size_deg_lat)
-                ]),
-                # Bottom-right
-                Polygon([
-                    (bounds[2] - corner_size_deg_lon, bounds[1]),
-                    (bounds[2], bounds[1]),
-                    (bounds[2], bounds[1] + corner_size_deg_lat),
-                    (bounds[2] - corner_size_deg_lon, bounds[1] + corner_size_deg_lat)
-                ])
-            ]
+            # Apply perimeter buffer for conservative mode
+            if st.session_state.get('show_conservative', False):
+                buffer_deg_lon = perimeter_buffer / lon_to_m
+                buffer_deg_lat = perimeter_buffer / lat_to_m
+                
+                # Shrink the usable area by buffer
+                buffered_bounds = {
+                    'minx': bounds[0] + buffer_deg_lon,
+                    'maxx': bounds[2] - buffer_deg_lon,
+                    'miny': bounds[1] + buffer_deg_lat,
+                    'maxy': bounds[3] - buffer_deg_lat
+                }
+                bounds = (buffered_bounds['minx'], buffered_bounds['miny'], 
+                        buffered_bounds['maxx'], buffered_bounds['maxy'])
+                
+                # Draw landscaping buffer zone
+                buffer_coords = [
+                    (buffered_bounds['minx'], buffered_bounds['miny']),
+                    (buffered_bounds['maxx'], buffered_bounds['miny']),
+                    (buffered_bounds['maxx'], buffered_bounds['maxy']),
+                    (buffered_bounds['minx'], buffered_bounds['maxy']),
+                    (buffered_bounds['minx'], buffered_bounds['miny'])
+                ]
+                
+                folium.Polygon(
+                    locations=[(lat, lon) for lon, lat in buffer_coords],
+                    color='#2d5016',
+                    weight=2,
+                    fill=False,
+                    popup='Landscaping Buffer (Conservative Mode)'
+                ).add_to(m)
 
             # Helper function (ALWAYS defined, always checks corners)
             def conflicts_with_corners(space_poly):
@@ -1389,8 +1383,7 @@ with col1:
                 current_x += space_w_deg
                 
                 # ADD THIS CHECK AT THE END OF EACH WHILE LOOP
-                if len(parking_spaces) >= target_space_count:
-                    break
+                
             
             # 2. BOTTOM PERIMETER - Spaces facing up (into lot)
             current_x = bounds[0]
@@ -1411,8 +1404,7 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_x += space_w_deg
-                if len(parking_spaces) >= target_space_count:
-                    break
+                
             
             # 3. LEFT PERIMETER - Spaces facing right (into lot)
             current_y = bounds[1]
@@ -1433,8 +1425,7 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_y += space_w_deg
-                if len(parking_spaces) >= target_space_count:
-                    break
+                
             
             # 4. RIGHT PERIMETER - Spaces facing left (into lot)
             current_y = bounds[1]
@@ -1455,8 +1446,7 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_y += space_w_deg
-                if len(parking_spaces) >= target_space_count:
-                    break
+                
             # 5. CENTER DOUBLE-LOADED ROWS (with proper clearance from perimeter)
             # Only create center rows if there's enough space
             center_height = center_bounds['top'] - center_bounds['bottom']
@@ -1918,8 +1908,7 @@ with col1:
                     parking_spaces.append(display_coords)
                 
                 current_y += space_l_deg
-                if len(parking_spaces) >= target_space_count:
-                    break
+                
         
         # Add parking spaces to map
         for space_coords in parking_spaces:
@@ -1938,21 +1927,47 @@ with col1:
         st.session_state.actual_spaces_drawn = len(parking_spaces)
         st.session_state.current_layout_type = "conservative" if st.session_state.get('show_conservative', False) else "optimized"
 
-        # Store both values separately for comparison
+        # CONSERVATIVE VS OPTIMIZED LAYOUT MODE
         if st.session_state.get('show_conservative', False):
-            st.session_state.conservative_spaces = len(parking_spaces)
+            # CONSERVATIVE MODE: Apply industry-standard conservative dimensions
+            # Based on ULI "Dimensions of Parking" 6th Edition and ITE standards
+            
+            st.info("📐 **Conservative Layout Mode**: Using industry-standard conservative dimensions (larger spaces, wider aisles, landscaping buffers)")
+            add_app_log(f"Conservative layout mode: applying conservative dimensions", "INFO")
+            
+            # Apply conservative dimension adjustments
+            if "Perpendicular" in p_type or "Compact" in p_type:
+                # Conservative perpendicular: 9' x 19' spaces, 26' aisles
+                space_w_conservative = 9.0 / length_conversion  # 9 ft in meters
+                space_l_conservative = 19.0 / length_conversion  # 19 ft in meters
+                aisle_w_conservative = 26.0 / length_conversion  # 26 ft in meters
+            elif "Angled" in p_type:
+                # Conservative angled: 9' x 20' spaces, 16' aisles
+                space_w_conservative = 9.0 / length_conversion
+                space_l_conservative = 20.0 / length_conversion
+                aisle_w_conservative = 16.0 / length_conversion
+            else:  # Parallel
+                # Conservative parallel: 9' x 24' spaces, 14' aisles
+                space_w_conservative = 9.0 / length_conversion
+                space_l_conservative = 24.0 / length_conversion
+                aisle_w_conservative = 14.0 / length_conversion
+            
+            # Override the user's dimensions with conservative standards
+            space_w = space_w_conservative
+            space_l = space_l_conservative
+            aisle_w = aisle_w_conservative
+            
+            # Add perimeter buffer (landscaping requirement: 10% of lot)
+            perimeter_buffer = 10.0 / length_conversion  # 10 ft buffer
+            
+            # No space limit - let conservative dimensions naturally result in fewer spaces
+            target_space_count = 999999
+            
         else:
-            st.session_state.optimized_spaces = len(parking_spaces)        
-        # Store parking spaces for 3D visualization
-        parking_spaces_3d = []
-        for space in parking_spaces:
-            parking_spaces_3d.append({
-                'coords': space[0],
-                'type': 'parking'
-            })
-        st.session_state.parking_spaces_3d = parking_spaces_3d
-        
-        add_app_log(f"Drew {len(parking_spaces)} parking spaces on map", "INFO")
+            # OPTIMIZED MODE: Use user's specified dimensions
+            add_app_log(f"Optimized layout mode: using user dimensions", "INFO")
+            perimeter_buffer = 0  # No buffer for optimized
+            target_space_count = 999999
         
         # Add legend
         legend_html = '''
