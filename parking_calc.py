@@ -398,8 +398,8 @@ else:
 # Calculation method toggle
 calculation_method = st.sidebar.radio(
     "Calculation Method",
-    ["Efficiency Factor", "Area per Space (ITE Standard)"],
-    help="Choose between efficiency factor method or industry-standard area per space"
+    ["Area per Space (ITE Standard)", "Efficiency Factor"],  # ← SWAPPED ORDER
+    help="Choose between industry-standard area per space or efficiency factor method"
 )
 
 st.sidebar.markdown("---")
@@ -479,12 +479,12 @@ with st.sidebar.expander("🅿️ Space Settings", expanded=True):
                 space_width = space_width_display / length_conversion
                 space_length = space_length_display / length_conversion
                 aisle_width = aisle_width_display / length_conversion
-                default_area_per_space = 350
+                default_area_per_space = 400
             else:
                 space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
                 space_length = st.number_input(f"Space Length ({length_unit})", value=5.0, min_value=4.5, max_value=6.0, step=0.1)
                 aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=6.0, min_value=5.0, max_value=8.0, step=0.5)
-                default_area_per_space = 32.5
+                default_area_per_space = 37.2
         elif parking_type == "Angled (45°)":
             if unit_system == "Imperial":
                 space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=11.5, step=0.5)
@@ -493,12 +493,12 @@ with st.sidebar.expander("🅿️ Space Settings", expanded=True):
                 space_width = space_width_display / length_conversion
                 space_length = space_length_display / length_conversion
                 aisle_width = aisle_width_display / length_conversion
-                default_area_per_space = 400
+                default_area_per_space = 450
             else:
                 space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.5, step=0.1)
                 space_length = st.number_input(f"Space Length ({length_unit})", value=5.5, min_value=5.0, max_value=6.5, step=0.1)
                 aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=4.0, min_value=3.5, max_value=6.0, step=0.5)
-                default_area_per_space = 37.2
+                default_area_per_space = 41.8
         elif parking_type == "Parallel":
             if unit_system == "Imperial":
                 space_width_display = st.number_input(f"Space Width ({length_unit})", value=8.2, min_value=6.5, max_value=9.8, step=0.5)
@@ -507,12 +507,12 @@ with st.sidebar.expander("🅿️ Space Settings", expanded=True):
                 space_width = space_width_display / length_conversion
                 space_length = space_length_display / length_conversion
                 aisle_width = aisle_width_display / length_conversion
-                default_area_per_space = 500
+                default_area_per_space = 550
             else:
                 space_width = st.number_input(f"Space Width ({length_unit})", value=2.5, min_value=2.0, max_value=3.0, step=0.1)
                 space_length = st.number_input(f"Space Length ({length_unit})", value=6.5, min_value=6.0, max_value=8.0, step=0.1)
                 aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=3.5, min_value=3.0, max_value=5.0, step=0.5)
-                default_area_per_space = 46.5
+                default_area_per_space = 51.1
         else:  # Compact
             if unit_system == "Imperial":
                 space_width_display = st.number_input(f"Space Width ({length_unit})", value=7.5, min_value=6.5, max_value=9.2, step=0.5)
@@ -521,12 +521,12 @@ with st.sidebar.expander("🅿️ Space Settings", expanded=True):
                 space_width = space_width_display / length_conversion
                 space_length = space_length_display / length_conversion
                 aisle_width = aisle_width_display / length_conversion
-                default_area_per_space = 300
+                default_area_per_space = 350
             else:
                 space_width = st.number_input(f"Space Width ({length_unit})", value=2.3, min_value=2.0, max_value=2.8, step=0.1)
                 space_length = st.number_input(f"Space Length ({length_unit})", value=4.5, min_value=4.0, max_value=5.5, step=0.1)
                 aisle_width = st.number_input(f"Aisle Width ({length_unit})", value=5.5, min_value=5.0, max_value=7.0, step=0.5)
-                default_area_per_space = 27.9
+                default_area_per_space = 32.5
         
         if unit_system == "Imperial":
             area_per_space_display = st.number_input(
@@ -1840,24 +1840,9 @@ with col2:
         st.markdown("---")
         
         col_btn1, col_btn2, col_btn3 = st.columns(3)
+        col_btn1, col_btn2, col_btn3 = st.columns(3)
         with col_btn1:
-            if st.button("🎯 Optimized Layout", key="generate_layout_btn", type="primary"):
-                if st.session_state.polygon_coords:
-                    st.session_state.show_layout = True
-                    st.session_state.show_conservative = False
-                    st.session_state.layout_params = {
-                        'polygon': st.session_state.polygon_coords,
-                        'space_width': space_width,
-                        'space_length': space_length,
-                        'aisle_width': aisle_width,
-                        'parking_type': parking_type,
-                        'estimated_spaces': results['estimated_spaces']
-                    }
-                    add_app_log(f"User requested optimized parking layout", "INFO")
-                    st.rerun()
-        
-        with col_btn2:
-            if st.button("📐 Conservative Layout", key="generate_conservative_btn"):
+            if st.button("📐 Conservative Layout", key="generate_conservative_btn", type="primary"):
                 if st.session_state.polygon_coords:
                     st.session_state.show_layout = True
                     st.session_state.show_conservative = True
@@ -1871,7 +1856,23 @@ with col2:
                     }
                     add_app_log(f"User requested conservative parking layout", "INFO")
                     st.rerun()
-        
+
+        with col_btn2:
+            if st.button("🎯 Optimized Layout", key="generate_layout_btn"):
+                if st.session_state.polygon_coords:
+                    st.session_state.show_layout = True
+                    st.session_state.show_conservative = False
+                    st.session_state.layout_params = {
+                        'polygon': st.session_state.polygon_coords,
+                        'space_width': space_width,
+                        'space_length': space_length,
+                        'aisle_width': aisle_width,
+                        'parking_type': parking_type,
+                        'estimated_spaces': results['estimated_spaces']
+                    }
+                    add_app_log(f"User requested optimized parking layout", "INFO")
+                    st.rerun()
+
         with col_btn3:
             if st.session_state.get('show_layout', False):
                 if st.button("🗑️ Clear Layout", key="clear_layout_btn"):
@@ -1879,11 +1880,11 @@ with col2:
                     st.session_state.show_conservative = False
                     st.session_state.actual_spaces_drawn = None
                     st.session_state.layout_params = None
-                    st.session_state.calculation_results = None  # ← ADD THIS LINE
-                    st.session_state.optimized_spaces = None     # ← ADD THIS LINE
-                    st.session_state.conservative_spaces = None  # ← ADD THIS LINE
-                    st.session_state.current_layout_type = None  # ← ADD THIS LINE
-                    st.session_state.parking_spaces_3d = None    # ← ADD THIS LINE
+                    st.session_state.calculation_results = None
+                    st.session_state.optimized_spaces = None
+                    st.session_state.conservative_spaces = None
+                    st.session_state.current_layout_type = None
+                    st.session_state.parking_spaces_3d = None
                     add_app_log(f"User cleared parking layout and results", "INFO")
                     st.rerun()
     else:
