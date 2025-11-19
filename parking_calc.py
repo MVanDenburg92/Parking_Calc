@@ -1789,24 +1789,30 @@ with col2:
                 st.caption(f"✅ Achieved: {actual_area_per_space:.1f} {area_unit}/space")
             
             # Show comparison if both layouts generated
+            # Show comparison if both layouts generated
             if 'optimized_spaces' in st.session_state and 'conservative_spaces' in st.session_state:
-                st.markdown("---")
-                st.markdown("**📊 Layout Comparison:**")
+                # ADD SAFETY CHECK: Make sure values exist and aren't None
+                opt_val = st.session_state.optimized_spaces
+                cons_val = st.session_state.conservative_spaces
                 
-                opt_spaces = st.session_state.optimized_spaces * results.get('num_levels', 1)
-                cons_spaces = st.session_state.conservative_spaces * results.get('num_levels', 1)
-                
-                col_comp1, col_comp2 = st.columns(2)
-                with col_comp1:
-                    st.metric("Optimized Total", f"{opt_spaces:,}")
-                with col_comp2:
-                    st.metric("Conservative Total", f"{cons_spaces:,}")
-                
-                difference = opt_spaces - cons_spaces
-                if difference > 0:
-                    st.caption(f"💡 Optimized layout fits **{difference:,} more spaces** (+{(difference/cons_spaces*100):.1f}%)")
-                else:
-                    st.caption(f"ℹ️ Layouts have similar capacity")
+                if opt_val is not None and cons_val is not None:
+                    st.markdown("---")
+                    st.markdown("**📊 Layout Comparison:**")
+                    
+                    opt_spaces = opt_val * results.get('num_levels', 1)
+                    cons_spaces = cons_val * results.get('num_levels', 1)
+                    
+                    col_comp1, col_comp2 = st.columns(2)
+                    with col_comp1:
+                        st.metric("Optimized Total", f"{opt_spaces:,}")
+                    with col_comp2:
+                        st.metric("Conservative Total", f"{cons_spaces:,}")
+                    
+                    difference = opt_spaces - cons_spaces
+                    if difference > 0:
+                        st.caption(f"💡 Optimized layout fits **{difference:,} more spaces** (+{(difference/cons_spaces*100):.1f}%)")
+                    else:
+                        st.caption(f"ℹ️ Layouts have similar capacity")
         
         st.markdown("---")
         st.markdown("**📋 Configuration Details:**")
