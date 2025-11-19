@@ -1157,39 +1157,36 @@ with col1:
                         ]
 
         # PERIMETER + CENTER LAYOUT
+        # PERIMETER + CENTER LAYOUT (CORRECTED - NO OVERLAPS)
         if use_perimeter_center:
             space_w_deg = space_w / lon_to_m
             space_l_deg = space_l / lat_to_m
             aisle_w_deg = aisle_w / lat_to_m
             aisle_w_deg_lon = aisle_w / lon_to_m
             
-            # ALWAYS define corner exclusion zones (regardless of checkbox)
+            # ALWAYS define corner exclusion zones
             corner_size_deg_lon = corner_island_size / lon_to_m
             corner_size_deg_lat = corner_island_size / lat_to_m
 
             corner_exclusion_zones = [
-                # Top-left
                 Polygon([
                     (bounds[0], bounds[3] - corner_size_deg_lat),
                     (bounds[0] + corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
                     (bounds[0] + corner_size_deg_lon, bounds[3]),
                     (bounds[0], bounds[3])
                 ]),
-                # Top-right
                 Polygon([
                     (bounds[2] - corner_size_deg_lon, bounds[3] - corner_size_deg_lat),
                     (bounds[2], bounds[3] - corner_size_deg_lat),
                     (bounds[2], bounds[3]),
                     (bounds[2] - corner_size_deg_lon, bounds[3])
                 ]),
-                # Bottom-left
                 Polygon([
                     (bounds[0], bounds[1]),
                     (bounds[0] + corner_size_deg_lon, bounds[1]),
                     (bounds[0] + corner_size_deg_lon, bounds[1] + corner_size_deg_lat),
                     (bounds[0], bounds[1] + corner_size_deg_lat)
                 ]),
-                # Bottom-right
                 Polygon([
                     (bounds[2] - corner_size_deg_lon, bounds[1]),
                     (bounds[2], bounds[1]),
@@ -1198,7 +1195,6 @@ with col1:
                 ])
             ]
 
-            # Helper function (ALWAYS defined)
             def conflicts_with_corners(space_poly):
                 """Check if parking space conflicts with corner exclusion zones"""
                 for corner_zone in corner_exclusion_zones:
@@ -1206,11 +1202,10 @@ with col1:
                         return True
                 return False
 
-            # Only DRAW the visual islands if checkbox is enabled
+            # Only DRAW corner islands if checkbox enabled
             if include_corner_islands:
                 for corner_zone in corner_exclusion_zones:
                     corner_coords = list(corner_zone.exterior.coords)
-                    
                     folium.Polygon(
                         locations=[(lat, lon) for lon, lat in corner_coords],
                         color='#2d5016',
@@ -1221,28 +1216,54 @@ with col1:
                         popup='Corner Landscape Island'
                     ).add_to(m)
             
-            # Calculate center bounds
-            circulation_clearance_lat = space_l_deg + (aisle_w_deg * 2)
-            circulation_clearance_lon = space_l_deg + (aisle_w_deg_lon * 2)
+            # ===== CRITICAL: Calculate boundaries with NO OVERLAP =====
+            # Perimeter spaces need: space_depth + aisle
+            # Center needs to start AFTER perimeter spaces + another circulation aisle
             
+            # For TOP perimeter:
+            # - Spaces face DOWN (into lot)
+            # - Space bottoms are at: bounds[3] - aisle_w_deg - space_l_deg
+            # - Space tops are at: bounds[3] - aisle_w_deg
+            # - Aisle is from: bounds[3] - aisle_w_deg to bounds[3]
+            
+            # For BOTTOM perimeter:
+            # - Spaces face UP (into lot)
+            # - Space bottoms are at: bounds[1]
+            # - Space tops are at: bounds[1] + space_l_deg
+            # - Aisle is from: bounds[1] + space_l_deg to bounds[1] + space_l_deg + aisle_w_deg
+            
+            # For LEFT perimeter:
+            # - Spaces face RIGHT
+            # - Left edge: bounds[0]
+            # - Right edge of spaces: bounds[0] + space_l_deg
+            # - Aisle: bounds[0] + space_l_deg to bounds[0] + space_l_deg + aisle_w_deg_lon
+            
+            # For RIGHT perimeter:
+            # - Spaces face LEFT
+            # - Right edge: bounds[2]
+            # - Left edge of spaces: bounds[2] - space_l_deg
+            # - Aisle: bounds[2] - space_l_deg - aisle_w_deg_lon to bounds[2] - space_l_deg
+            
+            # Center area must start AFTER perimeter + perimeter aisle + circulation aisle
             center_bounds = {
-                'left': bounds[0] + circulation_clearance_lon,
-                'right': bounds[2] - circulation_clearance_lon,
-                'bottom': bounds[1] + circulation_clearance_lat,
-                'top': bounds[3] - circulation_clearance_lat
+                'left': bounds[0] + space_l_deg + (aisle_w_deg_lon * 2),      # LEFT perimeter + 2 aisles
+                'right': bounds[2] - space_l_deg - (aisle_w_deg_lon * 2),     # RIGHT perimeter + 2 aisles
+                'bottom': bounds[1] + space_l_deg + (aisle_w_deg * 2),        # BOTTOM perimeter + 2 aisles
+                'top': bounds[3] - space_l_deg - (aisle_w_deg * 2)            # TOP perimeter + 2 aisles
             }
             
-            # 1. TOP PERIMETER
+            # 1. TOP PERIMETER - Spaces facing DOWN (into lot)
             current_x = bounds[0]
-            perimeter_y = bounds[3] - space_l_deg - aisle_w_deg
+            # Spaces bottom at bounds[3] - aisle - space_depth, top at bounds[3] - aisle
+            top_space_bottom = bounds[3] - aisle_w_deg - space_l_deg
             
             while current_x < bounds[2]:
                 space_coords = [
-                    (current_x, perimeter_y + space_l_deg),
-                    (current_x + space_w_deg, perimeter_y + space_l_deg),
-                    (current_x + space_w_deg, perimeter_y),
-                    (current_x, perimeter_y),
-                    (current_x, perimeter_y + space_l_deg)
+                    (current_x, top_space_bottom),                      # Bottom-left
+                    (current_x + space_w_deg, top_space_bottom),        # Bottom-right
+                    (current_x + space_w_deg, top_space_bottom + space_l_deg),  # Top-right
+                    (current_x, top_space_bottom + space_l_deg),        # Top-left
+                    (current_x, top_space_bottom)
                 ]
                 
                 space_poly = Polygon(space_coords)
@@ -1252,17 +1273,18 @@ with col1:
                 
                 current_x += space_w_deg
             
-            # 2. BOTTOM PERIMETER
+            # 2. BOTTOM PERIMETER - Spaces facing UP (into lot)
             current_x = bounds[0]
-            perimeter_y = bounds[1] + aisle_w_deg
+            # Spaces from bounds[1] to bounds[1] + space_depth
+            bottom_space_bottom = bounds[1] + aisle_w_deg
             
             while current_x < bounds[2]:
                 space_coords = [
-                    (current_x, perimeter_y),
-                    (current_x + space_w_deg, perimeter_y),
-                    (current_x + space_w_deg, perimeter_y + space_l_deg),
-                    (current_x, perimeter_y + space_l_deg),
-                    (current_x, perimeter_y)
+                    (current_x, bottom_space_bottom),
+                    (current_x + space_w_deg, bottom_space_bottom),
+                    (current_x + space_w_deg, bottom_space_bottom + space_l_deg),
+                    (current_x, bottom_space_bottom + space_l_deg),
+                    (current_x, bottom_space_bottom)
                 ]
                 
                 space_poly = Polygon(space_coords)
@@ -1272,17 +1294,18 @@ with col1:
                 
                 current_x += space_w_deg
             
-            # 3. LEFT PERIMETER
+            # 3. LEFT PERIMETER - Spaces facing RIGHT (into lot)
             current_y = bounds[1]
-            perimeter_x = bounds[0] + aisle_w_deg_lon
+            # Spaces from bounds[0] to bounds[0] + space_depth
+            left_space_left = bounds[0] + aisle_w_deg_lon
             
             while current_y < bounds[3]:
                 space_coords = [
-                    (perimeter_x, current_y),
-                    (perimeter_x + space_l_deg, current_y),
-                    (perimeter_x + space_l_deg, current_y + space_w_deg),
-                    (perimeter_x, current_y + space_w_deg),
-                    (perimeter_x, current_y)
+                    (left_space_left, current_y),
+                    (left_space_left + space_l_deg, current_y),
+                    (left_space_left + space_l_deg, current_y + space_w_deg),
+                    (left_space_left, current_y + space_w_deg),
+                    (left_space_left, current_y)
                 ]
                 
                 space_poly = Polygon(space_coords)
@@ -1292,17 +1315,18 @@ with col1:
                 
                 current_y += space_w_deg
             
-            # 4. RIGHT PERIMETER
+            # 4. RIGHT PERIMETER - Spaces facing LEFT (into lot)
             current_y = bounds[1]
-            perimeter_x = bounds[2] - space_l_deg - aisle_w_deg_lon
+            # Spaces from bounds[2] - space_depth to bounds[2]
+            right_space_left = bounds[2] - space_l_deg - aisle_w_deg_lon
             
             while current_y < bounds[3]:
                 space_coords = [
-                    (perimeter_x, current_y),
-                    (perimeter_x + space_l_deg, current_y),
-                    (perimeter_x + space_l_deg, current_y + space_w_deg),
-                    (perimeter_x, current_y + space_w_deg),
-                    (perimeter_x, current_y)
+                    (right_space_left, current_y),
+                    (right_space_left + space_l_deg, current_y),
+                    (right_space_left + space_l_deg, current_y + space_w_deg),
+                    (right_space_left, current_y + space_w_deg),
+                    (right_space_left, current_y)
                 ]
                 
                 space_poly = Polygon(space_coords)
@@ -1312,7 +1336,7 @@ with col1:
                 
                 current_y += space_w_deg
             
-            # 5. CENTER DOUBLE-LOADED ROWS
+            # 5. CENTER DOUBLE-LOADED ROWS (with proper clearance)
             center_height = center_bounds['top'] - center_bounds['bottom']
             center_width = center_bounds['right'] - center_bounds['left']
 
@@ -1331,17 +1355,17 @@ with col1:
                     row_positions = [first_row_y + (i * row_spacing) for i in range(center_aisle_count)]
                 
                 for row_idx, row_center_y in enumerate(row_positions):
-                    # Top spaces
+                    # Spaces on top of aisle (facing down)
                     current_x = center_bounds['left']
                     aisle_top_y = row_center_y + (aisle_w_deg / 2)
                     
                     while current_x < center_bounds['right']:
                         space_coords = [
-                            (current_x, aisle_top_y + space_l_deg),
-                            (current_x + space_w_deg, aisle_top_y + space_l_deg),
-                            (current_x + space_w_deg, aisle_top_y),
                             (current_x, aisle_top_y),
-                            (current_x, aisle_top_y + space_l_deg)
+                            (current_x + space_w_deg, aisle_top_y),
+                            (current_x + space_w_deg, aisle_top_y + space_l_deg),
+                            (current_x, aisle_top_y + space_l_deg),
+                            (current_x, aisle_top_y)
                         ]
                         
                         space_poly = Polygon(space_coords)
@@ -1351,17 +1375,17 @@ with col1:
                         
                         current_x += space_w_deg
                     
-                    # Bottom spaces
+                    # Spaces on bottom of aisle (facing up)
                     current_x = center_bounds['left']
                     aisle_bottom_y = row_center_y - (aisle_w_deg / 2)
                     
                     while current_x < center_bounds['right']:
                         space_coords = [
-                            (current_x, aisle_bottom_y),
-                            (current_x + space_w_deg, aisle_bottom_y),
-                            (current_x + space_w_deg, aisle_bottom_y - space_l_deg),
                             (current_x, aisle_bottom_y - space_l_deg),
-                            (current_x, aisle_bottom_y)
+                            (current_x + space_w_deg, aisle_bottom_y - space_l_deg),
+                            (current_x + space_w_deg, aisle_bottom_y),
+                            (current_x, aisle_bottom_y),
+                            (current_x, aisle_bottom_y - space_l_deg)
                         ]
                         
                         space_poly = Polygon(space_coords)
