@@ -1873,7 +1873,12 @@ with col2:
                     st.session_state.show_conservative = False
                     st.session_state.actual_spaces_drawn = None
                     st.session_state.layout_params = None
-                    add_app_log(f"User cleared parking layout", "INFO")
+                    st.session_state.calculation_results = None  # ← ADD THIS LINE
+                    st.session_state.optimized_spaces = None     # ← ADD THIS LINE
+                    st.session_state.conservative_spaces = None  # ← ADD THIS LINE
+                    st.session_state.current_layout_type = None  # ← ADD THIS LINE
+                    st.session_state.parking_spaces_3d = None    # ← ADD THIS LINE
+                    add_app_log(f"User cleared parking layout and results", "INFO")
                     st.rerun()
     else:
         st.info("👈 Draw a polygon on the map to calculate parking capacity")
